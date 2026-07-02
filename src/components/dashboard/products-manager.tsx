@@ -20,6 +20,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
+import { ImageUpload } from "./image-upload";
 import { RowActions, ToggleField } from "./entity-actions";
 import { apiRequest } from "@/lib/dashboard-api";
 import { formatPrice } from "@/lib/utils";
@@ -30,6 +31,7 @@ type ProductWithCategory = Product & { category: Category };
 interface ProductsManagerProps {
   products: ProductWithCategory[];
   categories: Category[];
+  currencySymbol?: string;
 }
 
 const emptyForm = {
@@ -54,7 +56,7 @@ const emptyForm = {
   prepTime: "",
 };
 
-export function ProductsManager({ products, categories }: ProductsManagerProps) {
+export function ProductsManager({ products, categories, currencySymbol = "ر.س" }: ProductsManagerProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<ProductWithCategory | null>(null);
@@ -205,10 +207,12 @@ export function ProductsManager({ products, categories }: ProductsManagerProps) 
                   </Select>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label>Image URL</Label>
-                <Input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://..." />
-              </div>
+              <ImageUpload
+                label="Product Image"
+                aspect="square"
+                value={form.image}
+                onChange={(url) => setForm({ ...form, image: url })}
+              />
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
                   ["isAvailable", "Available"],
@@ -263,7 +267,7 @@ export function ProductsManager({ products, categories }: ProductsManagerProps) 
               <div className="flex-1 min-w-0">
                 <h3 className="font-medium truncate">{product.nameEn}</h3>
                 <p className="text-sm text-muted-foreground truncate">{product.nameAr} · {product.category.nameEn}</p>
-                <p className="font-semibold text-primary mt-1">{formatPrice(product.price)}</p>
+                <p className="font-semibold text-primary mt-1">{formatPrice(product.price, currencySymbol)}</p>
               </div>
               <div className="flex flex-col sm:items-end gap-3">
                 <ToggleField

@@ -22,11 +22,13 @@ type ProductDetail = Product & {
 interface ProductDetailViewProps {
   product: ProductDetail;
   branch: Branch & { restaurant: Restaurant };
+  currencySymbol?: string;
 }
 
-export function ProductDetailView({ product, branch }: ProductDetailViewProps) {
+export function ProductDetailView({ product, branch, currencySymbol }: ProductDetailViewProps) {
   const t = useTranslations();
   const locale = useLocale();
+  const currency = currencySymbol || t("common.currency");
   const { toggleFavorite, isFavorite } = useFavorites();
   const [copied, setCopied] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -142,11 +144,11 @@ export function ProductDetailView({ product, branch }: ProductDetailViewProps) {
 
           <div className="flex items-center gap-3">
             <span className="text-3xl font-bold text-primary">
-              {formatPrice(product.price, t("common.currency"))}
+              {formatPrice(product.price, currency)}
             </span>
             {hasDiscount && (
               <span className="text-lg text-muted-foreground line-through">
-                {formatPrice(product.compareAtPrice!, t("common.currency"))}
+                {formatPrice(product.compareAtPrice!, currency)}
               </span>
             )}
           </div>
@@ -212,7 +214,7 @@ export function ProductDetailView({ product, branch }: ProductDetailViewProps) {
                     </span>
                     {ps.price && (
                       <span className="text-primary ms-2 font-semibold">
-                        {formatPrice(ps.price, t("common.currency"))}
+                        {formatPrice(ps.price, currency)}
                       </span>
                     )}
                   </div>
@@ -229,7 +231,7 @@ export function ProductDetailView({ product, branch }: ProductDetailViewProps) {
                   <div key={pa.id} className="flex items-center justify-between rounded-2xl border border-border px-4 py-3">
                     <span>{locale === "ar" ? pa.addon.nameAr : pa.addon.nameEn}</span>
                     <span className="text-primary font-semibold">
-                      +{formatPrice(pa.addon.price, t("common.currency"))}
+                      +{formatPrice(pa.addon.price, currency)}
                     </span>
                   </div>
                 ))}

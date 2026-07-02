@@ -41,6 +41,9 @@ export function LandingPage() {
             <Button variant="outline" size="sm" asChild>
               <Link href="/auth/login">{t("common.login")}</Link>
             </Button>
+            <Button size="sm" asChild>
+              <Link href="/auth/register">{t("common.register")}</Link>
+            </Button>
           </div>
         </div>
       </header>
@@ -58,7 +61,7 @@ export function LandingPage() {
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button size="lg" asChild>
-                  <Link href="/menu/basata-cafe-main">
+                  <Link href="/auth/register">
                     {t("common.getStarted")}
                     <ArrowRight className="h-4 w-4" />
                   </Link>
@@ -102,7 +105,7 @@ export function LandingPage() {
               {t("landing.heroSubtitle")}
             </p>
             <Button size="lg" variant="secondary" asChild>
-              <Link href="/menu/basata-cafe-main">
+              <Link href="/auth/register">
                 {t("common.getStarted")}
                 <ArrowRight className="h-4 w-4" />
               </Link>

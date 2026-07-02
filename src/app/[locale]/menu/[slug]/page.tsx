@@ -85,6 +85,10 @@ export default async function MenuPage({ params }: MenuPageProps) {
     orderBy: { sortOrder: "asc" },
   });
 
+  const settings = await db.settings.findUnique({
+    where: { restaurantId: branch.restaurantId },
+  });
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Restaurant",
@@ -103,7 +107,12 @@ export default async function MenuPage({ params }: MenuPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <MenuView branch={branch} categories={categories} allProducts={allProducts} />
+      <MenuView
+        branch={branch}
+        categories={categories}
+        allProducts={allProducts}
+        currencySymbol={settings?.currencySymbol}
+      />
     </>
   );
 }

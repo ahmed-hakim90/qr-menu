@@ -16,9 +16,10 @@ interface MenuViewProps {
   branch: BranchWithRestaurant;
   categories: (Category & { products: Product[] })[];
   allProducts: ProductWithCategory[];
+  currencySymbol?: string;
 }
 
-export function MenuView({ branch, categories, allProducts }: MenuViewProps) {
+export function MenuView({ branch, categories, allProducts, currencySymbol }: MenuViewProps) {
   const t = useTranslations();
   const locale = useLocale();
   const { toggleFavorite, isFavorite } = useFavorites();
@@ -43,7 +44,7 @@ export function MenuView({ branch, categories, allProducts }: MenuViewProps) {
     vegan: t("badges.vegan"),
     addToFavorites: t("common.addToFavorites"),
     removeFromFavorites: t("common.removeFromFavorites"),
-    currency: t("common.currency"),
+    currency: currencySymbol || t("common.currency"),
   };
 
   return (

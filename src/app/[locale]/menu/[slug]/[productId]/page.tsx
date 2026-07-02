@@ -45,5 +45,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!product || !product.isAvailable) notFound();
 
-  return <ProductDetailView product={product} branch={branch} />;
+  const settings = await db.settings.findUnique({
+    where: { restaurantId: branch.restaurantId },
+  });
+
+  return (
+    <ProductDetailView
+      product={product}
+      branch={branch}
+      currencySymbol={settings?.currencySymbol}
+    />
+  );
 }
