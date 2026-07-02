@@ -1,0 +1,291 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  OWNER
+  MANAGER
+  CASHIER
+  VIEWER
+}
+
+model Restaurant {
+  id            String     @id @default(cuid())
+  nameAr        String
+  nameEn        String
+  descriptionAr String?
+  descriptionEn String?
+  logo          String?
+  coverImage    String?
+  slug          String     @unique
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  branches      Branch[]
+  users         User[]
+  categories    Category[]
+  products      Product[]
+  addons        Addon[]
+  sizes         Size[]
+  offers        Offer[]
+  galleries     Gallery[]
+  media         Media[]
+  settings      Settings?
+}
+
+model Branch {
+  id              String          @id @default(cuid())
+  restaurantId    String
+  restaurant      Restaurant      @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  nameAr          String
+  nameEn          String
+  addressAr       String?
+  addressEn       String?
+  latitude        Float?
+  longitude       Float?
+  whatsapp        String?
+  phone           String?
+  instagram       String?
+  facebook        String?
+  googleMaps      String?
+  hoursAr         String?
+  hoursEn         String?
+  coverImage      String?
+  logo            String?
+  primaryColor    String          @default("#1a1a2e")
+  secondaryColor  String          @default("#e94560")
+  slug            String          @unique
+  isActive        Boolean         @default(true)
+  sortOrder       Int             @default(0)
+  qrCodes         QRCode[]
+  productBranches ProductBranch[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([restaurantId])
+}
+
+model Category {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  nameAr       String
+  nameEn       String
+  image        String?
+  sortOrder    Int        @default(0)
+  isVisible    Boolean    @default(true)
+  products     Product[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([restaurantId])
+}
+
+model Product {
+  id              String          @id @default(cuid())
+  restaurantId    String
+  restaurant      Restaurant      @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  categoryId      String
+  category        Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  nameAr          String
+  nameEn          String
+  descriptionAr   String?
+  descriptionEn   String?
+  image           String?
+  price           Float
+  compareAtPrice  Float?
+  tax             Float           @default(0)
+  isAvailable     Boolean         @default(true)
+  sortOrder       Int             @default(0)
+  isBestSeller    Boolean         @default(false)
+  isNew           Boolean         @default(false)
+  isOffer         Boolean         @default(false)
+  isSpicy         Boolean         @default(false)
+  isVegetarian    Boolean         @default(false)
+  isVegan         Boolean         @default(false)
+  isHot           Boolean         @default(false)
+  isCold          Boolean         @default(false)
+  calories        Int?
+  ingredientsAr   String?
+  ingredientsEn   String?
+  allergensAr     String?
+  allergensEn     String?
+  temperature     String?
+  prepTime        Int?
+  spiceLevel      Int?
+  images          ProductImage[]
+  productSizes    ProductSize[]
+  productAddons   ProductAddon[]
+  productBranches ProductBranch[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([restaurantId])
+  @@index([categoryId])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  sortOrder Int     @default(0)
+
+  @@index([productId])
+}
+
+model ProductBranch {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  branchId  String
+  branch    Branch  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  isAvailable Boolean @default(true)
+
+  @@unique([productId, branchId])
+}
+
+model Addon {
+  id           String         @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  nameAr       String
+  nameEn       String
+  price        Float          @default(0)
+  isActive     Boolean        @default(true)
+  sortOrder    Int            @default(0)
+  productAddons ProductAddon[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([restaurantId])
+}
+
+model ProductAddon {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  addonId   String
+  addon     Addon   @relation(fields: [addonId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, addonId])
+}
+
+model Size {
+  id           String        @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant    @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  nameAr       String
+  nameEn       String
+  priceModifier Float        @default(0)
+  isActive     Boolean       @default(true)
+  sortOrder    Int           @default(0)
+  productSizes ProductSize[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([restaurantId])
+}
+
+model ProductSize {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sizeId    String
+  size      Size    @relation(fields: [sizeId], references: [id], onDelete: Cascade)
+  price     Float?
+
+  @@unique([productId, sizeId])
+}
+
+model Offer {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  titleAr      String
+  titleEn      String
+  descriptionAr String?
+  descriptionEn String?
+  image        String?
+  discount     Float?
+  startDate    DateTime?
+  endDate      DateTime?
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([restaurantId])
+}
+
+model QRCode {
+  id        String   @id @default(cuid())
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  color     String   @default("#000000")
+  logoUrl   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([branchId])
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  name         String
+  role         UserRole   @default(VIEWER)
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([restaurantId])
+}
+
+model Settings {
+  id             String     @id @default(cuid())
+  restaurantId   String     @unique
+  restaurant     Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  currency       String     @default("SAR")
+  currencySymbol String     @default("ر.س")
+  taxRate        Float      @default(15)
+  language       String     @default("ar")
+  theme          String     @default("light")
+  fontFamily     String     @default("Inter")
+  borderRadius   String     @default("1rem")
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Gallery {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  titleAr      String?
+  titleEn      String?
+  image        String
+  sortOrder    Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([restaurantId])
+}
+
+model Media {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  name         String
+  url          String
+  type         String     @default("image")
+  size         Int?
+  createdAt    DateTime   @default(now())
+
+  @@index([restaurantId])
+}

@@ -1,0 +1,51 @@
+import { getSession } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { getTranslations } from "next-intl/server";
+import { Package, FolderOpen, Building2, Tag } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export default async function DashboardPage() {
+  const session = await getSession();
+  const t = await getTranslations("dashboard");
+
+  if (!session) return null;
+
+  const [products, categories, branches, offers] = await Promise.all([
+    db.product.count({ where: { restaurantId: session.restaurantId } }),
+    db.category.count({ where: { restaurantId: session.restaurantId } }),
+    db.branch.count({ where: { restaurantId: session.restaurantId } }),
+    db.offer.count({ where: { restaurantId: session.restaurantId, isActive: true } }),
+  ]);
+
+  const stats = [
+    { label: t("totalProducts"), value: products, icon: Package },
+    { label: t("totalCategories"), value: categories, icon: FolderOpen },
+    { label: t("totalBranches"), value: branches, icon: Building2 },
+    { label: t("activeOffers"), value: offers, icon: Tag },
+  ];
+
+  return (
+    <div>
+      <h1 className="text-3xl font-bold mb-2">
+        {t("welcome")}, {session.name}
+      </h1>
+      <p className="text-muted-foreground mb-8">QR Menu Dashboard</p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map(({ label, value, icon: Icon }) => (
+          <Card key={label}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                {label}
+              </CardTitle>
+              <Icon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{value}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
