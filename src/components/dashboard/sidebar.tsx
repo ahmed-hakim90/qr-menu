@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
+  CreditCard,
+  Globe,
   LayoutDashboard,
   Building2,
   FolderOpen,
@@ -38,6 +40,8 @@ const navItems = [
   { href: "/dashboard/gallery", icon: Image, key: "gallery" },
   { href: "/dashboard/media", icon: Film, key: "media" },
   { href: "/dashboard/qr-codes", icon: QrCode, key: "qrCodes" },
+  { href: "/dashboard/domain", icon: Globe, key: "domain" },
+  { href: "/dashboard/billing", icon: CreditCard, key: "billing" },
   { href: "/dashboard/appearance", icon: Palette, key: "appearance" },
   { href: "/dashboard/settings", icon: Settings, key: "settings" },
   { href: "/dashboard/users", icon: Users, key: "users" },

@@ -1,14 +1,14 @@
 const CACHE_NAME = "qr-menu-v1";
 const OFFLINE_URLS = ["/", "/menu/basata-cafe-main"];
 
-self.addEventListener("install", (event: ExtendableEvent) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(OFFLINE_URLS))
   );
-  (self as unknown as ServiceWorkerGlobalScope).skipWaiting();
+  self.skipWaiting();
 });
 
-self.addEventListener("fetch", (event: FetchEvent) => {
+self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
   event.respondWith(
@@ -22,7 +22,7 @@ self.addEventListener("fetch", (event: FetchEvent) => {
   );
 });
 
-self.addEventListener("activate", (event: ExtendableEvent) => {
+self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))

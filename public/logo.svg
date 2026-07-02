@@ -1,0 +1,41 @@
+<svg width="760" height="200" viewBox="0 0 760 200" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="QR Menu">
+  <defs>
+    <linearGradient id="brandGradient" x1="16" y1="16" x2="184" y2="184" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff6b81"/>
+      <stop offset="1" stop-color="#d1284a"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(16 16) scale(0.328125)">
+    <rect width="512" height="512" rx="116" fill="url(#brandGradient)"/>
+    <g fill="none" stroke="#ffffff" stroke-width="18">
+      <rect x="105" y="105" width="90" height="90" rx="22"/>
+      <rect x="317" y="105" width="90" height="90" rx="22"/>
+      <rect x="105" y="317" width="90" height="90" rx="22"/>
+    </g>
+    <g fill="#ffffff">
+      <rect x="132" y="132" width="36" height="36" rx="10"/>
+      <rect x="344" y="132" width="36" height="36" rx="10"/>
+      <rect x="132" y="344" width="36" height="36" rx="10"/>
+      <rect x="236" y="140" width="30" height="30" rx="9"/>
+      <rect x="280" y="140" width="30" height="30" rx="9"/>
+      <rect x="140" y="236" width="30" height="30" rx="9"/>
+      <rect x="140" y="280" width="30" height="30" rx="9"/>
+      <rect x="236" y="236" width="30" height="30" rx="9"/>
+      <rect x="324" y="236" width="30" height="30" rx="9"/>
+      <rect x="368" y="236" width="30" height="30" rx="9"/>
+      <rect x="280" y="280" width="30" height="30" rx="9"/>
+      <rect x="324" y="280" width="30" height="30" rx="9"/>
+      <rect x="236" y="324" width="30" height="30" rx="9"/>
+      <rect x="280" y="324" width="30" height="30" rx="9"/>
+      <rect x="368" y="324" width="30" height="30" rx="9"/>
+      <rect x="280" y="368" width="30" height="30" rx="9"/>
+      <rect x="324" y="368" width="30" height="30" rx="9"/>
+      <rect x="368" y="368" width="30" height="30" rx="9"/>
+    </g>
+  </g>
+
+  <text x="212" y="130" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="96" font-weight="700" letter-spacing="-2">
+    <tspan fill="#e94560">QR</tspan><tspan fill="#18181b" dx="28">Menu</tspan>
+  </text>
+</svg>

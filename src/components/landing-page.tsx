@@ -32,7 +32,8 @@ export function LandingPage() {
       <header className="fixed top-0 inset-x-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-4 h-16">
           <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-            <QrCode className="h-6 w-6 text-primary" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icon.svg" alt="" className="h-7 w-7" />
             {t("common.appName")}
           </Link>
           <div className="flex items-center gap-2">

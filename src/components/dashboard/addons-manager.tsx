@@ -19,6 +19,7 @@ import {
 import { RowActions, ToggleField } from "./entity-actions";
 import { apiRequest } from "@/lib/dashboard-api";
 import { formatPrice } from "@/lib/utils";
+import { CURRENCY_SYMBOL } from "@/lib/currency";
 import type { Addon } from "@/generated/prisma";
 
 interface AddonsManagerProps {
@@ -26,7 +27,7 @@ interface AddonsManagerProps {
   currencySymbol?: string;
 }
 
-export function AddonsManager({ addons, currencySymbol = "ر.س" }: AddonsManagerProps) {
+export function AddonsManager({ addons, currencySymbol = CURRENCY_SYMBOL }: AddonsManagerProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Addon | null>(null);

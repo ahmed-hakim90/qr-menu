@@ -24,14 +24,20 @@ import { ImageUpload } from "./image-upload";
 import { RowActions, ToggleField } from "./entity-actions";
 import { apiRequest } from "@/lib/dashboard-api";
 import { formatPrice } from "@/lib/utils";
-import type { Category, Product } from "@/generated/prisma";
+import { CURRENCY_SYMBOL } from "@/lib/currency";
+import type { Branch, Category, Product, ProductBranch } from "@/generated/prisma";
 
-type ProductWithCategory = Product & { category: Category };
+type ProductWithRelations = Product & {
+  category: Category;
+  productBranches?: (ProductBranch & { branch: Branch })[];
+};
 
 interface ProductsManagerProps {
-  products: ProductWithCategory[];
+  products: ProductWithRelations[];
   categories: Category[];
+  branches: Branch[];
   currencySymbol?: string;
+  productLimit: number;
 }
 
 const emptyForm = {
@@ -56,13 +62,21 @@ const emptyForm = {
   prepTime: "",
 };
 
-export function ProductsManager({ products, categories, currencySymbol = "ر.س" }: ProductsManagerProps) {
+export function ProductsManager({
+  products,
+  categories,
+  branches,
+  currencySymbol = CURRENCY_SYMBOL,
+  productLimit,
+}: ProductsManagerProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<ProductWithCategory | null>(null);
+  const [editing, setEditing] = useState<ProductWithRelations | null>(null);
   const [search, setSearch] = useState("");
   const [form, setForm] = useState(emptyForm);
+  const [branchIds, setBranchIds] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+  const atLimit = products.length >= productLimit;
 
   const refresh = () => {
     router.refresh();
@@ -84,10 +98,11 @@ export function ProductsManager({ products, categories, currencySymbol = "ر.س"
       ...emptyForm,
       categoryId: categories[0]?.id || "",
     });
+    setBranchIds(branches.map((branch) => branch.id));
     setOpen(true);
   };
 
-  const openEdit = (product: ProductWithCategory) => {
+  const openEdit = (product: ProductWithRelations) => {
     setEditing(product);
     setForm({
       nameAr: product.nameAr,
@@ -110,7 +125,14 @@ export function ProductsManager({ products, categories, currencySymbol = "ر.س"
       calories: product.calories ? String(product.calories) : "",
       prepTime: product.prepTime ? String(product.prepTime) : "",
     });
+    setBranchIds(product.productBranches?.map((item) => item.branchId) || branches.map((branch) => branch.id));
     setOpen(true);
+  };
+
+  const toggleBranch = (branchId: string) => {
+    setBranchIds((prev) =>
+      prev.includes(branchId) ? prev.filter((id) => id !== branchId) : [...prev, branchId]
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -123,6 +145,7 @@ export function ProductsManager({ products, categories, currencySymbol = "ر.س"
         compareAtPrice: form.compareAtPrice ? Number(form.compareAtPrice) : null,
         calories: form.calories ? Number(form.calories) : null,
         prepTime: form.prepTime ? Number(form.prepTime) : null,
+        branchIds,
       };
 
       if (editing) {
@@ -155,11 +178,13 @@ export function ProductsManager({ products, categories, currencySymbol = "ر.س"
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold">Products</h1>
-          <p className="text-sm text-muted-foreground">{products.length} total products</p>
+          <p className="text-sm text-muted-foreground">
+            {products.length} / {productLimit} products used
+          </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button size="sm" onClick={openCreate}>
+            <Button size="sm" onClick={openCreate} disabled={atLimit}>
               <Plus className="h-4 w-4" />
               Add Product
             </Button>
@@ -213,6 +238,28 @@ export function ProductsManager({ products, categories, currencySymbol = "ر.س"
                 value={form.image}
                 onChange={(url) => setForm({ ...form, image: url })}
               />
+
+              <div className="space-y-2">
+                <Label>Available in Branches</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {branches.map((branch) => (
+                    <label
+                      key={branch.id}
+                      className="flex items-center gap-2 rounded-xl border border-border/50 px-3 py-2 text-sm"
+                    >
+                      <Switch
+                        checked={branchIds.includes(branch.id)}
+                        onCheckedChange={() => toggleBranch(branch.id)}
+                      />
+                      <span>{branch.nameEn}</span>
+                    </label>
+                  ))}
+                </div>
+                {branchIds.length === 0 && (
+                  <p className="text-xs text-destructive">Select at least one branch</p>
+                )}
+              </div>
+
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
                   ["isAvailable", "Available"],
@@ -236,12 +283,20 @@ export function ProductsManager({ products, categories, currencySymbol = "ر.س"
               </div>
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                <Button type="submit" disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
+                <Button type="submit" disabled={saving || branchIds.length === 0}>{saving ? "Saving..." : "Save"}</Button>
               </div>
             </form>
           </DialogContent>
         </Dialog>
       </div>
+
+      {atLimit && (
+        <Card className="mb-4 border-amber-500/30 bg-amber-500/5">
+          <CardContent className="p-4 text-sm text-amber-700 dark:text-amber-300">
+            You reached your product limit. Upgrade your plan from Billing to add more products.
+          </CardContent>
+        </Card>
+      )}
 
       <div className="relative mb-4">
         <Search className="absolute start-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -266,7 +321,12 @@ export function ProductsManager({ products, categories, currencySymbol = "ر.س"
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-medium truncate">{product.nameEn}</h3>
-                <p className="text-sm text-muted-foreground truncate">{product.nameAr} · {product.category.nameEn}</p>
+                <p className="text-sm text-muted-foreground truncate">
+                  {product.nameAr} · {product.category.nameEn}
+                  {product.productBranches && product.productBranches.length > 0 && (
+                    <> · {product.productBranches.length} branch(es)</>
+                  )}
+                </p>
                 <p className="font-semibold text-primary mt-1">{formatPrice(product.price, currencySymbol)}</p>
               </div>
               <div className="flex flex-col sm:items-end gap-3">

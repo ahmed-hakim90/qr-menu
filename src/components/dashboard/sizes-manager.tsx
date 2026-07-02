@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { RowActions, ToggleField } from "./entity-actions";
 import { apiRequest } from "@/lib/dashboard-api";
+import { formatCurrencyAmount } from "@/lib/currency";
 import type { Size } from "@/generated/prisma";
 
 interface SizesManagerProps {
@@ -103,7 +104,7 @@ export function SizesManager({ sizes }: SizesManagerProps) {
                 <Input value={form.nameEn} onChange={(e) => setForm({ ...form, nameEn: e.target.value })} required />
               </div>
               <div className="space-y-2">
-                <Label>Extra Price (SAR)</Label>
+                <Label>Extra Price (ج.م)</Label>
                 <Input type="number" step="0.01" value={form.priceModifier} onChange={(e) => setForm({ ...form, priceModifier: e.target.value })} required />
               </div>
               <div className="flex justify-end gap-2">
@@ -122,7 +123,7 @@ export function SizesManager({ sizes }: SizesManagerProps) {
               <div className="text-center">
                 <h3 className="font-medium">{size.nameEn}</h3>
                 <p className="text-sm text-muted-foreground">{size.nameAr}</p>
-                <p className="text-primary font-semibold mt-1">+{size.priceModifier} SAR</p>
+                <p className="text-primary font-semibold mt-1">+{formatCurrencyAmount(size.priceModifier)}</p>
               </div>
               <ToggleField
                 id={size.id}

@@ -14,17 +14,71 @@ enum UserRole {
   VIEWER
 }
 
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PENDING
+  EXPIRED
+  CANCELLED
+}
+
+model Plan {
+  id            String         @id @default(cuid())
+  slug          String         @unique
+  nameAr        String
+  nameEn        String
+  priceMonthly  Float
+  maxBranches   Int
+  maxProducts   Int
+  maxUsers      Int
+  customDomain  Boolean        @default(false)
+  sortOrder     Int            @default(0)
+  isActive      Boolean        @default(true)
+  subscriptions Subscription[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Subscription {
+  id                 String             @id @default(cuid())
+  restaurantId       String             @unique
+  restaurant         Restaurant         @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  planId             String
+  plan               Plan               @relation(fields: [planId], references: [id])
+  status             SubscriptionStatus @default(TRIAL)
+  currentPeriodStart DateTime           @default(now())
+  currentPeriodEnd   DateTime?
+  paymentReference   String?
+  paymentNotes       String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@index([planId])
+}
+
+model PlatformAdmin {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 model Restaurant {
-  id            String     @id @default(cuid())
+  id            String        @id @default(cuid())
   nameAr        String
   nameEn        String
   descriptionAr String?
   descriptionEn String?
   logo          String?
   coverImage    String?
-  slug          String     @unique
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  slug          String        @unique
+  subdomain     String?       @unique
+  customDomain  String?       @unique
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
   branches      Branch[]
   users         User[]
   categories    Category[]
@@ -35,6 +89,7 @@ model Restaurant {
   galleries     Gallery[]
   media         Media[]
   settings      Settings?
+  subscription  Subscription?
 }
 
 model Branch {
@@ -252,8 +307,8 @@ model Settings {
   id             String     @id @default(cuid())
   restaurantId   String     @unique
   restaurant     Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  currency       String     @default("SAR")
-  currencySymbol String     @default("ر.س")
+  currency       String     @default("EGP")
+  currencySymbol String     @default("ج.م")
   taxRate        Float      @default(15)
   language       String     @default("ar")
   theme          String     @default("light")

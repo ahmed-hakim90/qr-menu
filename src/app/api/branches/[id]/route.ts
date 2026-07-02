@@ -36,3 +36,26 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
   return NextResponse.json(branch);
 }
+
+export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+  const { session, error } = await requireSession("MANAGER");
+  if (error) return error;
+
+  const { id } = await params;
+  const existing = await db.branch.findFirst({
+    where: { id, restaurantId: session!.restaurantId },
+  });
+  if (!existing) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  const branchCount = await db.branch.count({
+    where: { restaurantId: session!.restaurantId },
+  });
+  if (branchCount <= 1) {
+    return NextResponse.json({ error: "At least one branch is required" }, { status: 400 });
+  }
+
+  await db.branch.delete({ where: { id } });
+  return NextResponse.json({ success: true });
+}

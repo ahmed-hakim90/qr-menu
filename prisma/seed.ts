@@ -133,6 +133,16 @@ const PRODUCT_TEMPLATES: Record<string, { en: string[]; ar: string[] }> = {
 async function main() {
   console.log("🌱 Seeding database...");
 
+  await db.platformAdmin.upsert({
+    where: { email: "admin@qrmenu.com" },
+    update: {},
+    create: {
+      email: "admin@qrmenu.com",
+      name: "Super Admin",
+      passwordHash: await bcrypt.hash("superadmin123", 12),
+    },
+  });
+
   await db.productAddon.deleteMany();
   await db.productSize.deleteMany();
   await db.productImage.deleteMany();
@@ -145,10 +155,59 @@ async function main() {
   await db.qRCode.deleteMany();
   await db.gallery.deleteMany();
   await db.media.deleteMany();
-  await db.settings.deleteMany();
+  await db.subscription.deleteMany();
   await db.user.deleteMany();
   await db.branch.deleteMany();
   await db.restaurant.deleteMany();
+
+  await db.plan.upsert({
+    where: { slug: "free" },
+    update: {},
+    create: {
+      id: "plan_free",
+      slug: "free",
+      nameAr: "مجاني",
+      nameEn: "Free",
+      priceMonthly: 0,
+      maxBranches: 1,
+      maxProducts: 30,
+      maxUsers: 2,
+      customDomain: false,
+      sortOrder: 0,
+    },
+  });
+  await db.plan.upsert({
+    where: { slug: "pro" },
+    update: {},
+    create: {
+      id: "plan_pro",
+      slug: "pro",
+      nameAr: "احترافي",
+      nameEn: "Pro",
+      priceMonthly: 99,
+      maxBranches: 3,
+      maxProducts: 150,
+      maxUsers: 5,
+      customDomain: false,
+      sortOrder: 1,
+    },
+  });
+  await db.plan.upsert({
+    where: { slug: "business" },
+    update: {},
+    create: {
+      id: "plan_business",
+      slug: "business",
+      nameAr: "أعمال",
+      nameEn: "Business",
+      priceMonthly: 249,
+      maxBranches: 10,
+      maxProducts: 500,
+      maxUsers: 15,
+      customDomain: true,
+      sortOrder: 2,
+    },
+  });
 
   const restaurant = await db.restaurant.create({
     data: {
@@ -157,10 +216,22 @@ async function main() {
       descriptionAr: "كافيه ومطعم يقدم أفضل المشروبات والأطباق في أجواء مميزة",
       descriptionEn: "A premium cafe & restaurant serving the finest drinks and dishes in a unique atmosphere",
       slug: "basata-cafe",
+      subdomain: "basata-cafe",
       logo: BRAND_IMAGES.logo,
       coverImage: BRAND_IMAGES.cover,
     },
   });
+
+  const proPlan = await db.plan.findUnique({ where: { slug: "pro" } });
+  if (proPlan) {
+    await db.subscription.create({
+      data: {
+        restaurantId: restaurant.id,
+        planId: proPlan.id,
+        status: "ACTIVE",
+      },
+    });
+  }
 
   const branch1 = await db.branch.create({
     data: {
@@ -206,8 +277,8 @@ async function main() {
   await db.settings.create({
     data: {
       restaurantId: restaurant.id,
-      currency: "SAR",
-      currencySymbol: "ر.س",
+      currency: "EGP",
+      currencySymbol: "ج.م",
       taxRate: 15,
       language: "ar",
     },
@@ -386,8 +457,10 @@ async function main() {
   });
 
   console.log(`✅ Seeded: 1 restaurant, 2 branches, ${categories.length} categories, ${productCount} products`);
-  console.log("📧 Login: admin@basata.com / admin123");
+  console.log("📧 Tenant Login: admin@basata.com / admin123");
+  console.log("🛡️ Super Admin: admin@qrmenu.com / superadmin123");
   console.log("🔗 Menu: /menu/basata-cafe-main");
+  console.log("🔗 Admin Panel: /admin");
 }
 
 main()

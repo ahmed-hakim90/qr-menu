@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/api-auth";
 import { productSchema } from "@/lib/validators";
+import { syncProductBranches } from "@/lib/product-branches";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -25,26 +26,46 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  if (parsed.data.categoryId) {
+  const { branchIds, ...productData } = parsed.data;
+
+  if (productData.categoryId) {
     const category = await db.category.findFirst({
-      where: { id: parsed.data.categoryId, restaurantId: session!.restaurantId },
+      where: { id: productData.categoryId, restaurantId: session!.restaurantId },
     });
     if (!category) {
       return NextResponse.json({ error: "Invalid category" }, { status: 400 });
     }
   }
 
-  const product = await db.product.update({
+  await db.product.update({
     where: { id },
     data: {
-      ...parsed.data,
-      image: parsed.data.image === "" ? null : parsed.data.image,
-      compareAtPrice: parsed.data.compareAtPrice ?? undefined,
-      calories: parsed.data.calories ?? undefined,
-      prepTime: parsed.data.prepTime ?? undefined,
-      spiceLevel: parsed.data.spiceLevel ?? undefined,
+      ...productData,
+      image: productData.image === "" ? null : productData.image,
+      compareAtPrice: productData.compareAtPrice ?? undefined,
+      calories: productData.calories ?? undefined,
+      prepTime: productData.prepTime ?? undefined,
+      spiceLevel: productData.spiceLevel ?? undefined,
     },
-    include: { category: true },
+  });
+
+  if (branchIds) {
+    try {
+      await syncProductBranches(id, session!.restaurantId, branchIds);
+    } catch (err) {
+      return NextResponse.json(
+        { error: err instanceof Error ? err.message : "Invalid branches" },
+        { status: 400 }
+      );
+    }
+  }
+
+  const product = await db.product.findUnique({
+    where: { id },
+    include: {
+      category: true,
+      productBranches: { include: { branch: true } },
+    },
   });
 
   return NextResponse.json(product);

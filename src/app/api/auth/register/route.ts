@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { createSession, hashPassword } from "@/lib/auth";
 import { registerTenantSchema } from "@/lib/validators";
+import { CURRENCY_CODE, CURRENCY_SYMBOL } from "@/lib/currency";
 import { slugify } from "@/lib/utils";
 
 const DEFAULT_CATEGORIES = [
@@ -56,24 +57,36 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Email already registered" }, { status: 409 });
   }
 
-  const restaurantSlug = await uniqueRestaurantSlug(data.restaurantNameEn);
+  const restaurantSlug = await uniqueRestaurantSlug(data.restaurantName);
   const branchSlug = await uniqueBranchSlug(`${restaurantSlug}-main`);
   const passwordHash = await hashPassword(data.password);
 
   const sessionUser = await db.$transaction(async (tx) => {
     const restaurant = await tx.restaurant.create({
       data: {
-        nameAr: data.restaurantNameAr,
-        nameEn: data.restaurantNameEn,
+        nameAr: data.restaurantName,
+        nameEn: data.restaurantName,
         slug: restaurantSlug,
+        subdomain: restaurantSlug,
       },
     });
+
+    const freePlan = await tx.plan.findUnique({ where: { slug: "free" } });
+    if (freePlan) {
+      await tx.subscription.create({
+        data: {
+          restaurantId: restaurant.id,
+          planId: freePlan.id,
+          status: "ACTIVE",
+        },
+      });
+    }
 
     await tx.settings.create({
       data: {
         restaurantId: restaurant.id,
-        currency: data.currency,
-        currencySymbol: data.currencySymbol,
+        currency: CURRENCY_CODE,
+        currencySymbol: CURRENCY_SYMBOL,
         language: data.language,
       },
     });
@@ -81,10 +94,8 @@ export async function POST(request: NextRequest) {
     await tx.branch.create({
       data: {
         restaurantId: restaurant.id,
-        nameAr: data.branchNameAr,
-        nameEn: data.branchNameEn,
-        phone: data.phone || null,
-        whatsapp: data.whatsapp || null,
+        nameAr: "الفرع الرئيسي",
+        nameEn: "Main Branch",
         slug: branchSlug,
       },
     });

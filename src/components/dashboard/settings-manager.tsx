@@ -8,21 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { apiRequest } from "@/lib/dashboard-api";
+import { CURRENCY_CODE, CURRENCY_LABEL_AR, CURRENCY_LABEL_EN, CURRENCY_SYMBOL } from "@/lib/currency";
 import type { Settings } from "@/generated/prisma";
-
-const CURRENCIES = [
-  { code: "SAR", symbol: "ر.س", label: "Saudi Riyal" },
-  { code: "EGP", symbol: "ج.م", label: "Egyptian Pound" },
-  { code: "AED", symbol: "د.إ", label: "UAE Dirham" },
-  { code: "KWD", symbol: "د.ك", label: "Kuwaiti Dinar" },
-  { code: "QAR", symbol: "ر.ق", label: "Qatari Riyal" },
-  { code: "BHD", symbol: "د.ب", label: "Bahraini Dinar" },
-  { code: "OMR", symbol: "ر.ع", label: "Omani Rial" },
-  { code: "JOD", symbol: "د.أ", label: "Jordanian Dinar" },
-  { code: "USD", symbol: "$", label: "US Dollar" },
-  { code: "EUR", symbol: "€", label: "Euro" },
-];
 
 interface SettingsManagerProps {
   settings: Settings;
@@ -31,22 +20,11 @@ interface SettingsManagerProps {
 export function SettingsManager({ settings }: SettingsManagerProps) {
   const router = useRouter();
   const [form, setForm] = useState({
-    currency: settings.currency,
-    currencySymbol: settings.currencySymbol,
     taxRate: String(settings.taxRate),
     language: settings.language as "ar" | "en",
     theme: settings.theme as "light" | "dark" | "system",
   });
   const [saving, setSaving] = useState(false);
-
-  const handleCurrencyChange = (code: string) => {
-    const preset = CURRENCIES.find((c) => c.code === code);
-    setForm((prev) => ({
-      ...prev,
-      currency: code,
-      currencySymbol: preset?.symbol ?? prev.currencySymbol,
-    }));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,31 +56,20 @@ export function SettingsManager({ settings }: SettingsManagerProps) {
             <CardTitle>Currency & Language</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Currency</Label>
-              <Select
-                value={form.currency}
-                onChange={(e) => handleCurrencyChange(e.target.value)}
-              >
-                {CURRENCIES.map((c) => (
-                  <option key={c.code} value={c.code}>
-                    {c.label} ({c.code})
-                  </option>
-                ))}
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Currency Symbol</Label>
-              <Input
-                value={form.currencySymbol}
-                onChange={(e) =>
-                  setForm({ ...form, currencySymbol: e.target.value })
-                }
-                placeholder="ر.س"
-              />
-              <p className="text-xs text-muted-foreground">
-                Preview: 25.00 {form.currencySymbol}
+            <div className="rounded-2xl border border-border/50 bg-muted/30 px-4 py-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-medium">Currency</p>
+                  <p className="text-sm text-muted-foreground">
+                    {CURRENCY_LABEL_EN} · {CURRENCY_LABEL_AR}
+                  </p>
+                </div>
+                <Badge variant="secondary">
+                  {CURRENCY_CODE} · {CURRENCY_SYMBOL}
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Preview: 25.00 {CURRENCY_SYMBOL}
               </p>
             </div>
 

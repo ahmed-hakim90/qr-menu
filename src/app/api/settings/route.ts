@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/api-auth";
 import { settingsSchema } from "@/lib/validators";
+import { CURRENCY_CODE, CURRENCY_SYMBOL } from "@/lib/currency";
 
 export async function GET() {
   const { session, error } = await requireSession();
@@ -13,7 +14,11 @@ export async function GET() {
 
   if (!settings) {
     settings = await db.settings.create({
-      data: { restaurantId: session!.restaurantId },
+      data: {
+        restaurantId: session!.restaurantId,
+        currency: CURRENCY_CODE,
+        currencySymbol: CURRENCY_SYMBOL,
+      },
     });
   }
 
@@ -34,9 +39,15 @@ export async function PATCH(request: NextRequest) {
     where: { restaurantId: session!.restaurantId },
     create: {
       restaurantId: session!.restaurantId,
+      currency: CURRENCY_CODE,
+      currencySymbol: CURRENCY_SYMBOL,
       ...parsed.data,
     },
-    update: parsed.data,
+    update: {
+      ...parsed.data,
+      currency: CURRENCY_CODE,
+      currencySymbol: CURRENCY_SYMBOL,
+    },
   });
 
   return NextResponse.json(settings);

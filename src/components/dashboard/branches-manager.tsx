@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Pencil, ExternalLink } from "lucide-react";
+import { Plus, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,27 +16,55 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { ImageUpload } from "./image-upload";
-import { ToggleField } from "./entity-actions";
+import { RowActions, ToggleField } from "./entity-actions";
 import { apiRequest } from "@/lib/dashboard-api";
 import type { Branch } from "@/generated/prisma";
 
 interface BranchesManagerProps {
   branches: Branch[];
+  branchLimit: number;
 }
 
-export function BranchesManager({ branches }: BranchesManagerProps) {
+const emptyForm = {
+  nameAr: "",
+  nameEn: "",
+  addressAr: "",
+  addressEn: "",
+  phone: "",
+  whatsapp: "",
+  instagram: "",
+  facebook: "",
+  googleMaps: "",
+  hoursAr: "",
+  hoursEn: "",
+  logo: "",
+  coverImage: "",
+  primaryColor: "#1a1a2e",
+  secondaryColor: "#e94560",
+  isActive: true,
+};
+
+export function BranchesManager({ branches, branchLimit }: BranchesManagerProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Branch | null>(null);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState<Record<string, string | boolean>>({});
+  const [form, setForm] = useState<Record<string, string | boolean>>(emptyForm);
+  const atLimit = branches.length >= branchLimit;
 
   const refresh = () => {
     router.refresh();
     toast.success("Saved");
+  };
+
+  const openCreate = () => {
+    setEditing(null);
+    setForm(emptyForm);
+    setOpen(true);
   };
 
   const openEdit = (branch: Branch) => {
@@ -67,13 +95,19 @@ export function BranchesManager({ branches }: BranchesManagerProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editing) return;
     setSaving(true);
     try {
-      await apiRequest(`/api/branches/${editing.id}`, {
-        method: "PATCH",
-        body: JSON.stringify(form),
-      });
+      if (editing) {
+        await apiRequest(`/api/branches/${editing.id}`, {
+          method: "PATCH",
+          body: JSON.stringify(form),
+        });
+      } else {
+        await apiRequest("/api/branches", {
+          method: "POST",
+          body: JSON.stringify(form),
+        });
+      }
       setOpen(false);
       refresh();
     } catch (error) {
@@ -85,55 +119,24 @@ export function BranchesManager({ branches }: BranchesManagerProps) {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Branches</h1>
-
-      <div className="grid gap-4">
-        {branches.map((branch) => (
-          <Card key={branch.id}>
-            <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6">
-              <div>
-                <h3 className="font-semibold text-lg">{branch.nameEn}</h3>
-                <p className="text-sm text-muted-foreground">{branch.nameAr}</p>
-                <p className="text-sm text-muted-foreground mt-1">{branch.addressEn}</p>
-                <div className="flex gap-2 mt-2">
-                  <Badge variant={branch.isActive ? "success" : "secondary"}>
-                    {branch.isActive ? "Active" : "Inactive"}
-                  </Badge>
-                </div>
-              </div>
-              <div className="flex flex-col sm:items-end gap-3">
-                <ToggleField
-                  id={branch.id}
-                  label={branch.isActive ? "Active" : "Hidden"}
-                  checked={branch.isActive}
-                  field="isActive"
-                  endpoint={`/api/branches/${branch.id}`}
-                  onUpdated={refresh}
-                />
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => openEdit(branch)}>
-                    <Pencil className="h-4 w-4" />
-                    Edit
-                  </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href={`/menu/${branch.slug}`} target="_blank">
-                      <ExternalLink className="h-4 w-4" />
-                      View
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Branch</DialogTitle>
-          </DialogHeader>
-          {editing && (
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold">Branches</h1>
+          <p className="text-sm text-muted-foreground">
+            {branches.length} / {branchLimit} branches used
+          </p>
+        </div>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" onClick={openCreate} disabled={atLimit}>
+              <Plus className="h-4 w-4" />
+              Add Branch
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editing ? "Edit Branch" : "Add Branch"}</DialogTitle>
+            </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-5">
               <ImageUpload
                 label="Cover Image (Header)"
@@ -184,11 +187,11 @@ export function BranchesManager({ branches }: BranchesManagerProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Phone</Label>
-                  <Input value={form.phone as string} onChange={(e) => set("phone", e.target.value)} placeholder="+9665..." />
+                  <Input value={form.phone as string} onChange={(e) => set("phone", e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label>WhatsApp</Label>
-                  <Input value={form.whatsapp as string} onChange={(e) => set("whatsapp", e.target.value)} placeholder="9665..." />
+                  <Input value={form.whatsapp as string} onChange={(e) => set("whatsapp", e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label>Instagram URL</Label>
@@ -231,9 +234,61 @@ export function BranchesManager({ branches }: BranchesManagerProps) {
                 <Button type="submit" disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
               </div>
             </form>
-          )}
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {atLimit && (
+        <Card className="mb-4 border-amber-500/30 bg-amber-500/5">
+          <CardContent className="p-4 text-sm text-amber-700 dark:text-amber-300">
+            You reached your branch limit. Upgrade your plan from Billing to add more branches.
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="grid gap-4">
+        {branches.map((branch) => (
+          <Card key={branch.id}>
+            <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6">
+              <div>
+                <h3 className="font-semibold text-lg">{branch.nameEn}</h3>
+                <p className="text-sm text-muted-foreground">{branch.nameAr}</p>
+                <p className="text-sm text-muted-foreground mt-1">{branch.addressEn}</p>
+                <div className="flex gap-2 mt-2">
+                  <Badge variant={branch.isActive ? "success" : "secondary"}>
+                    {branch.isActive ? "Active" : "Inactive"}
+                  </Badge>
+                </div>
+              </div>
+              <div className="flex flex-col sm:items-end gap-3">
+                <ToggleField
+                  id={branch.id}
+                  label={branch.isActive ? "Active" : "Hidden"}
+                  checked={branch.isActive}
+                  field="isActive"
+                  endpoint={`/api/branches/${branch.id}`}
+                  onUpdated={refresh}
+                />
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href={`/menu/${branch.slug}`} target="_blank">
+                      <ExternalLink className="h-4 w-4" />
+                      View
+                    </Link>
+                  </Button>
+                  <RowActions
+                    onEdit={() => openEdit(branch)}
+                    onDelete={async () => {
+                      await apiRequest(`/api/branches/${branch.id}`, { method: "DELETE" });
+                      refresh();
+                    }}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
