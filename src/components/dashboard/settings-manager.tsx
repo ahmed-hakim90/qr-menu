@@ -10,6 +10,7 @@ import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { apiRequest } from "@/lib/dashboard-api";
+import { NotificationsSettings } from "./notifications-settings";
 import { CURRENCY_CODE, CURRENCY_LABEL_AR, CURRENCY_LABEL_EN, CURRENCY_SYMBOL } from "@/lib/currency";
 import type { Settings } from "@/generated/prisma";
 
@@ -23,6 +24,7 @@ export function SettingsManager({ settings }: SettingsManagerProps) {
     taxRate: String(settings.taxRate),
     language: settings.language as "ar" | "en",
     theme: settings.theme as "light" | "dark" | "system",
+    notificationsEnabled: settings.notificationsEnabled,
   });
   const [saving, setSaving] = useState(false);
 
@@ -129,6 +131,13 @@ export function SettingsManager({ settings }: SettingsManagerProps) {
             </div>
           </CardContent>
         </Card>
+
+        <NotificationsSettings
+          enabled={form.notificationsEnabled}
+          onEnabledChange={(notificationsEnabled) =>
+            setForm({ ...form, notificationsEnabled })
+          }
+        />
 
         <Button type="submit" disabled={saving}>
           {saving ? "Saving..." : "Save Settings"}

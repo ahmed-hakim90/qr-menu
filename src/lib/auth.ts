@@ -3,6 +3,9 @@ import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 import { db } from "./db";
 import type { UserRole } from "@/generated/prisma";
+import { hasPermission } from "./permissions";
+
+export { hasPermission };
 
 const SECRET = new TextEncoder().encode(
   process.env.AUTH_SECRET || "dev-secret-change-me"
@@ -77,17 +80,4 @@ export async function loginUser(email: string, password: string) {
     role: user.role,
     restaurantId: user.restaurantId,
   } satisfies SessionUser;
-}
-
-export function hasPermission(
-  role: UserRole,
-  required: UserRole[]
-): boolean {
-  const hierarchy: Record<UserRole, number> = {
-    OWNER: 4,
-    MANAGER: 3,
-    CASHIER: 2,
-    VIEWER: 1,
-  };
-  return required.some((r) => hierarchy[role] >= hierarchy[r]);
 }

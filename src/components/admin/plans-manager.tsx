@@ -18,6 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { formatCurrencyAmount } from "@/lib/currency";
+import { getPlanFeatureLabels, isMenuOnlyPlan } from "@/lib/plan-features";
 import type { Plan } from "@/generated/prisma";
 
 type PlanRow = Plan & { _count: { subscriptions: number } };
@@ -35,6 +36,8 @@ const emptyForm = {
   maxProducts: "30",
   maxUsers: "2",
   customDomain: false,
+  hasTables: false,
+  hasOrdering: false,
   sortOrder: "0",
   isActive: true,
 };
@@ -63,6 +66,8 @@ export function PlansManager({ plans }: PlansManagerProps) {
       maxProducts: String(plan.maxProducts),
       maxUsers: String(plan.maxUsers),
       customDomain: plan.customDomain,
+      hasTables: plan.hasTables,
+      hasOrdering: plan.hasOrdering,
       sortOrder: String(plan.sortOrder),
       isActive: plan.isActive,
     });
@@ -182,6 +187,14 @@ export function PlansManager({ plans }: PlansManagerProps) {
                 Allow custom domain
               </label>
               <label className="flex items-center gap-2 text-sm">
+                <Switch checked={form.hasTables} onCheckedChange={(v) => setForm({ ...form, hasTables: v })} />
+                Table QR codes (ترابيزات)
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <Switch checked={form.hasOrdering} onCheckedChange={(v) => setForm({ ...form, hasOrdering: v })} />
+                Table ordering (طلبات من الترابيزة)
+              </label>
+              <label className="flex items-center gap-2 text-sm">
                 <Switch checked={form.isActive} onCheckedChange={(v) => setForm({ ...form, isActive: v })} />
                 Plan active (visible to tenants)
               </label>
@@ -211,6 +224,7 @@ export function PlansManager({ plans }: PlansManagerProps) {
                 {plan.priceMonthly === 0 ? "Free" : formatCurrencyAmount(plan.priceMonthly)}
               </p>
               <ul className="text-sm text-muted-foreground space-y-1">
+                <li>{isMenuOnlyPlan(plan) ? "Menu only" : getPlanFeatureLabels(plan).en}</li>
                 <li>{plan.maxBranches} branches</li>
                 <li>{plan.maxProducts} products</li>
                 <li>{plan.maxUsers} users</li>

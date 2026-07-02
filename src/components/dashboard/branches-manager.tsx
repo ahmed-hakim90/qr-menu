@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -21,13 +20,30 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { ImageUpload } from "./image-upload";
 import { RowActions, ToggleField } from "./entity-actions";
+import { WorkingHoursEditor } from "./working-hours-editor";
+import { LocationPicker, googleMapsUrl } from "./location-picker";
+import { SocialInput, fromSocialUrl, toSocialUrl } from "./social-input";
 import { apiRequest } from "@/lib/dashboard-api";
+import {
+  defaultWorkingHours,
+  normalizeWorkingHours,
+  parseWorkingHours,
+  type WorkingHours,
+} from "@/lib/working-hours";
 import type { Branch } from "@/generated/prisma";
 
 interface BranchesManagerProps {
   branches: Branch[];
   branchLimit: number;
 }
+
+const COLOR_PRESETS = [
+  { primary: "#1a1a2e", secondary: "#e94560", label: "Classic" },
+  { primary: "#0f172a", secondary: "#f59e0b", label: "Midnight" },
+  { primary: "#14532d", secondary: "#84cc16", label: "Fresh" },
+  { primary: "#1e3a5f", secondary: "#38bdf8", label: "Ocean" },
+  { primary: "#3f1d1d", secondary: "#f97316", label: "Warm" },
+];
 
 const emptyForm = {
   nameAr: "",
@@ -38,9 +54,6 @@ const emptyForm = {
   whatsapp: "",
   instagram: "",
   facebook: "",
-  googleMaps: "",
-  hoursAr: "",
-  hoursEn: "",
   logo: "",
   coverImage: "",
   primaryColor: "#1a1a2e",
@@ -53,7 +66,10 @@ export function BranchesManager({ branches, branchLimit }: BranchesManagerProps)
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Branch | null>(null);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState<Record<string, string | boolean>>(emptyForm);
+  const [form, setForm] = useState(emptyForm);
+  const [workingHours, setWorkingHours] = useState<WorkingHours>(defaultWorkingHours());
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
   const atLimit = branches.length >= branchLimit;
 
   const refresh = () => {
@@ -61,9 +77,15 @@ export function BranchesManager({ branches, branchLimit }: BranchesManagerProps)
     toast.success("Saved");
   };
 
+  const set = (key: keyof typeof emptyForm, value: string | boolean) =>
+    setForm((prev) => ({ ...prev, [key]: value }));
+
   const openCreate = () => {
     setEditing(null);
     setForm(emptyForm);
+    setWorkingHours(defaultWorkingHours());
+    setLatitude(null);
+    setLongitude(null);
     setOpen(true);
   };
 
@@ -74,38 +96,50 @@ export function BranchesManager({ branches, branchLimit }: BranchesManagerProps)
       nameEn: branch.nameEn,
       addressAr: branch.addressAr || "",
       addressEn: branch.addressEn || "",
-      phone: branch.phone || "",
-      whatsapp: branch.whatsapp || "",
-      instagram: branch.instagram || "",
-      facebook: branch.facebook || "",
-      googleMaps: branch.googleMaps || "",
-      hoursAr: branch.hoursAr || "",
-      hoursEn: branch.hoursEn || "",
+      phone: fromSocialUrl("phone", branch.phone),
+      whatsapp: fromSocialUrl("whatsapp", branch.whatsapp),
+      instagram: fromSocialUrl("instagram", branch.instagram),
+      facebook: fromSocialUrl("facebook", branch.facebook),
       logo: branch.logo || "",
       coverImage: branch.coverImage || "",
       primaryColor: branch.primaryColor,
       secondaryColor: branch.secondaryColor,
       isActive: branch.isActive,
     });
+    setWorkingHours(parseWorkingHours(branch.workingHours) || defaultWorkingHours());
+    setLatitude(branch.latitude);
+    setLongitude(branch.longitude);
     setOpen(true);
   };
-
-  const set = (key: string, value: string | boolean) =>
-    setForm((prev) => ({ ...prev, [key]: value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     try {
+      const payload = {
+        ...form,
+        phone: toSocialUrl("phone", form.phone),
+        whatsapp: toSocialUrl("whatsapp", form.whatsapp),
+        instagram: toSocialUrl("instagram", form.instagram),
+        facebook: toSocialUrl("facebook", form.facebook),
+        workingHours: normalizeWorkingHours(workingHours),
+        latitude,
+        longitude,
+        googleMaps:
+          latitude !== null && longitude !== null
+            ? googleMapsUrl(latitude, longitude)
+            : undefined,
+      };
+
       if (editing) {
         await apiRequest(`/api/branches/${editing.id}`, {
           method: "PATCH",
-          body: JSON.stringify(form),
+          body: JSON.stringify(payload),
         });
       } else {
         await apiRequest("/api/branches", {
           method: "POST",
-          body: JSON.stringify(form),
+          body: JSON.stringify(payload),
         });
       }
       setOpen(false);
@@ -141,97 +175,137 @@ export function BranchesManager({ branches, branchLimit }: BranchesManagerProps)
               <ImageUpload
                 label="Cover Image (Header)"
                 aspect="wide"
-                value={(form.coverImage as string) || ""}
+                value={form.coverImage}
                 onChange={(url) => set("coverImage", url)}
               />
               <ImageUpload
                 label="Logo"
                 aspect="square"
-                value={(form.logo as string) || ""}
+                value={form.logo}
                 onChange={(url) => set("logo", url)}
               />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Name (Arabic)</Label>
-                  <Input value={form.nameAr as string} onChange={(e) => set("nameAr", e.target.value)} required />
+                  <Input value={form.nameAr} onChange={(e) => set("nameAr", e.target.value)} required />
                 </div>
                 <div className="space-y-2">
                   <Label>Name (English)</Label>
-                  <Input value={form.nameEn as string} onChange={(e) => set("nameEn", e.target.value)} required />
+                  <Input value={form.nameEn} onChange={(e) => set("nameEn", e.target.value)} required />
                 </div>
               </div>
+
+              <LocationPicker
+                latitude={latitude}
+                longitude={longitude}
+                onChange={({ latitude: lat, longitude: lng }) => {
+                  setLatitude(lat);
+                  setLongitude(lng);
+                }}
+                onAddressResolved={({ addressAr, addressEn }) => {
+                  setForm((prev) => ({ ...prev, addressAr, addressEn }));
+                }}
+              />
+
+              <WorkingHoursEditor value={workingHours} onChange={setWorkingHours} />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Address (Arabic)</Label>
-                  <Input value={form.addressAr as string} onChange={(e) => set("addressAr", e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Address (English)</Label>
-                  <Input value={form.addressEn as string} onChange={(e) => set("addressEn", e.target.value)} />
-                </div>
+                <SocialInput
+                  platform="phone"
+                  value={form.phone}
+                  onChange={(value) => set("phone", value)}
+                />
+                <SocialInput
+                  platform="whatsapp"
+                  value={form.whatsapp}
+                  onChange={(value) => set("whatsapp", value)}
+                />
+                <SocialInput
+                  platform="instagram"
+                  value={form.instagram}
+                  onChange={(value) => set("instagram", value)}
+                />
+                <SocialInput
+                  platform="facebook"
+                  value={form.facebook}
+                  onChange={(value) => set("facebook", value)}
+                />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Working Hours (Arabic)</Label>
-                  <Textarea value={form.hoursAr as string} onChange={(e) => set("hoursAr", e.target.value)} className="min-h-[70px]" />
+              <div className="space-y-3">
+                <Label>Color Theme</Label>
+                <div className="flex flex-wrap gap-2">
+                  {COLOR_PRESETS.map((preset) => (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => {
+                        set("primaryColor", preset.primary);
+                        set("secondaryColor", preset.secondary);
+                      }}
+                      className="flex items-center gap-2 rounded-xl border border-border/50 px-3 py-2 text-sm hover:bg-muted/50 transition-colors"
+                    >
+                      <span
+                        className="h-4 w-4 rounded-full border"
+                        style={{ background: preset.primary }}
+                      />
+                      <span
+                        className="h-4 w-4 rounded-full border"
+                        style={{ background: preset.secondary }}
+                      />
+                      {preset.label}
+                    </button>
+                  ))}
                 </div>
-                <div className="space-y-2">
-                  <Label>Working Hours (English)</Label>
-                  <Textarea value={form.hoursEn as string} onChange={(e) => set("hoursEn", e.target.value)} className="min-h-[70px]" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Phone</Label>
-                  <Input value={form.phone as string} onChange={(e) => set("phone", e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label>WhatsApp</Label>
-                  <Input value={form.whatsapp as string} onChange={(e) => set("whatsapp", e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Instagram URL</Label>
-                  <Input value={form.instagram as string} onChange={(e) => set("instagram", e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Facebook URL</Label>
-                  <Input value={form.facebook as string} onChange={(e) => set("facebook", e.target.value)} />
-                </div>
-                <div className="space-y-2 sm:col-span-2">
-                  <Label>Google Maps URL</Label>
-                  <Input value={form.googleMaps as string} onChange={(e) => set("googleMaps", e.target.value)} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Primary Color</Label>
-                  <div className="flex gap-2">
-                    <Input type="color" value={form.primaryColor as string} onChange={(e) => set("primaryColor", e.target.value)} className="w-14 h-11 p-1" />
-                    <Input value={form.primaryColor as string} onChange={(e) => set("primaryColor", e.target.value)} className="flex-1" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Primary Color</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        value={form.primaryColor}
+                        onChange={(e) => set("primaryColor", e.target.value)}
+                        className="w-14 h-11 p-1"
+                      />
+                      <Input
+                        value={form.primaryColor}
+                        onChange={(e) => set("primaryColor", e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Secondary Color</Label>
-                  <div className="flex gap-2">
-                    <Input type="color" value={form.secondaryColor as string} onChange={(e) => set("secondaryColor", e.target.value)} className="w-14 h-11 p-1" />
-                    <Input value={form.secondaryColor as string} onChange={(e) => set("secondaryColor", e.target.value)} className="flex-1" />
+                  <div className="space-y-2">
+                    <Label>Secondary Color</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        value={form.secondaryColor}
+                        onChange={(e) => set("secondaryColor", e.target.value)}
+                        className="w-14 h-11 p-1"
+                      />
+                      <Input
+                        value={form.secondaryColor}
+                        onChange={(e) => set("secondaryColor", e.target.value)}
+                        className="flex-1"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
               <label className="flex items-center gap-2 text-sm">
-                <Switch checked={form.isActive as boolean} onCheckedChange={(v) => set("isActive", v)} />
+                <Switch checked={form.isActive} onCheckedChange={(v) => set("isActive", v)} />
                 Branch active (visible to customers)
               </label>
 
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-                <Button type="submit" disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
+                <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={saving}>
+                  {saving ? "Saving..." : "Save"}
+                </Button>
               </div>
             </form>
           </DialogContent>
@@ -258,6 +332,9 @@ export function BranchesManager({ branches, branchLimit }: BranchesManagerProps)
                   <Badge variant={branch.isActive ? "success" : "secondary"}>
                     {branch.isActive ? "Active" : "Inactive"}
                   </Badge>
+                  {branch.latitude && branch.longitude && (
+                    <Badge variant="secondary">Location set</Badge>
+                  )}
                 </div>
               </div>
               <div className="flex flex-col sm:items-end gap-3">

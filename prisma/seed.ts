@@ -173,6 +173,8 @@ async function main() {
       maxProducts: 30,
       maxUsers: 2,
       customDomain: false,
+      hasTables: false,
+      hasOrdering: false,
       sortOrder: 0,
     },
   });
@@ -189,6 +191,8 @@ async function main() {
       maxProducts: 150,
       maxUsers: 5,
       customDomain: false,
+      hasTables: true,
+      hasOrdering: true,
       sortOrder: 1,
     },
   });
@@ -205,6 +209,8 @@ async function main() {
       maxProducts: 500,
       maxUsers: 15,
       customDomain: true,
+      hasTables: true,
+      hasOrdering: true,
       sortOrder: 2,
     },
   });

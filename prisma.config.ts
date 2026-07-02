@@ -3,12 +3,41 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
+// `prisma migrate deploy` must run over a direct/session connection.
+// The Supabase transaction pooler (pgbouncer, port 6543) never holds a
+// session, so the session-level advisory lock the migration engine takes
+// never resolves — the deploy build hangs indefinitely on
+// "Datasource db: ... at ...pooler.supabase.com:6543".
+//
+// Prefer DIRECT_URL. If it is missing (e.g. not configured on Vercel),
+// derive a safe direct URL from DATABASE_URL by switching the pooler port
+// 6543 -> 5432 and dropping the pgbouncer flag instead of silently falling
+// back to the transaction pooler.
+function migrationUrl(): string | undefined {
+  const raw = process.env["DIRECT_URL"] ?? process.env["DATABASE_URL"];
+  if (!raw) return undefined;
+
+  try {
+    const url = new URL(raw);
+    // Never migrate through the transaction pooler.
+    if (url.port === "6543") url.port = "5432";
+    url.searchParams.delete("pgbouncer");
+    // Fail fast instead of hanging the whole build if the DB is unreachable.
+    if (!url.searchParams.has("connect_timeout")) {
+      url.searchParams.set("connect_timeout", "15");
+    }
+    return url.toString();
+  } catch {
+    return raw;
+  }
+}
+
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    url: migrationUrl(),
   },
 });

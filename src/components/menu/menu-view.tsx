@@ -5,6 +5,9 @@ import { useTranslations, useLocale } from "next-intl";
 import { MenuHeader } from "./menu-header";
 import { MenuSearch } from "./menu-search";
 import { ProductCard } from "./product-card";
+import { MenuCartBar } from "./menu-cart-bar";
+import { useMenuCart } from "@/hooks/use-menu-cart";
+import { useTableSession } from "@/hooks/use-table-session";
 import { useFavorites } from "@/hooks/use-favorites";
 import { cn } from "@/lib/utils";
 import type { Branch, Restaurant, Category, Product } from "@/generated/prisma";
@@ -17,12 +20,15 @@ interface MenuViewProps {
   categories: (Category & { products: Product[] })[];
   allProducts: ProductWithCategory[];
   currencySymbol?: string;
+  tableNumber?: number;
 }
 
-export function MenuView({ branch, categories, allProducts, currencySymbol }: MenuViewProps) {
+export function MenuView({ branch, categories, allProducts, currencySymbol, tableNumber }: MenuViewProps) {
   const t = useTranslations();
   const locale = useLocale();
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { items, addItem, updateQuantity, clear, total } = useMenuCart();
+  const { sessionId, requestBill, callWaiter } = useTableSession(branch.slug, tableNumber);
   const [filteredProducts, setFilteredProducts] = useState<ProductWithCategory[] | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
@@ -89,9 +95,21 @@ export function MenuView({ branch, categories, allProducts, currencySymbol }: Me
                     product={product}
                     locale={locale}
                     branchSlug={branch.slug}
+                    tableNumber={tableNumber}
                     labels={badgeLabels}
                     isFavorite={isFavorite(product.id)}
                     onToggleFavorite={toggleFavorite}
+                    onAddToCart={
+                      tableNumber
+                        ? (product) =>
+                            addItem({
+                              productId: product.id,
+                              nameAr: product.nameAr,
+                              nameEn: product.nameEn,
+                              unitPrice: product.price,
+                            })
+                        : undefined
+                    }
                   />
                 ))}
               </div>
@@ -143,9 +161,21 @@ export function MenuView({ branch, categories, allProducts, currencySymbol }: Me
                           product={{ ...product, category }}
                           locale={locale}
                           branchSlug={branch.slug}
+                          tableNumber={tableNumber}
                           labels={badgeLabels}
                           isFavorite={isFavorite(product.id)}
                           onToggleFavorite={toggleFavorite}
+                          onAddToCart={
+                            tableNumber
+                              ? (product) =>
+                                  addItem({
+                                    productId: product.id,
+                                    nameAr: product.nameAr,
+                                    nameEn: product.nameEn,
+                                    unitPrice: product.price,
+                                  })
+                              : undefined
+                          }
                         />
                       ))}
                   </div>
@@ -154,6 +184,19 @@ export function MenuView({ branch, categories, allProducts, currencySymbol }: Me
           </>
         )}
       </div>
+
+      <MenuCartBar
+        locale={locale}
+        currencySymbol={currencySymbol}
+        sessionId={sessionId}
+        tableNumber={tableNumber}
+        items={items}
+        total={total}
+        onUpdateQuantity={updateQuantity}
+        onClear={clear}
+        onRequestBill={requestBill}
+        onCallWaiter={callWaiter}
+      />
     </div>
   );
 }

@@ -14,6 +14,7 @@
     "delete": "حذف",
     "edit": "تعديل",
     "add": "إضافة",
+    "addToCart": "أضف للسلة",
     "loading": "جاري التحميل...",
     "noResults": "لا توجد نتائج",
     "currency": "ج.م",
@@ -81,7 +82,14 @@
   },
   "dashboard": {
     "overview": "نظرة عامة",
+    "analytics": "التحليلات",
+    "orders": "الطلبات",
+    "captain": "الكابتن",
+    "cashier": "الكاشير",
+    "floor": "مصمم الصالة",
+    "reservations": "الحجوزات",
     "branches": "الفروع",
+    "tables": "الترابيزات",
     "categories": "الأقسام",
     "products": "المنتجات",
     "offers": "العروض",
@@ -99,7 +107,11 @@
     "totalProducts": "إجمالي المنتجات",
     "totalCategories": "إجمالي الأقسام",
     "totalBranches": "إجمالي الفروع",
-    "activeOffers": "العروض النشطة"
+    "activeOffers": "العروض النشطة",
+    "todaySales": "مبيعات اليوم",
+    "openOrders": "الطلبات المفتوحة",
+    "activeTables": "الترابيزات النشطة",
+    "reservationsToday": "حجوزات اليوم"
   },
   "auth": {
     "loginTitle": "تسجيل الدخول",

@@ -4,11 +4,14 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, Share2, Link2, Heart, Clock, Flame, Thermometer } from "lucide-react";
+import { ArrowLeft, Share2, Link2, Heart, Clock, Flame, Thermometer, Plus } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { ProductBadges } from "./product-badges";
+import { MenuCartBar } from "./menu-cart-bar";
 import { useFavorites } from "@/hooks/use-favorites";
+import { useMenuCart } from "@/hooks/use-menu-cart";
+import { useTableSession } from "@/hooks/use-table-session";
 import { formatPrice, cn } from "@/lib/utils";
 import type { Branch, Restaurant, Product, Category, ProductImage, ProductSize, ProductAddon, Size, Addon } from "@/generated/prisma";
 
@@ -23,13 +26,21 @@ interface ProductDetailViewProps {
   product: ProductDetail;
   branch: Branch & { restaurant: Restaurant };
   currencySymbol?: string;
+  tableNumber?: number;
 }
 
-export function ProductDetailView({ product, branch, currencySymbol }: ProductDetailViewProps) {
+export function ProductDetailView({
+  product,
+  branch,
+  currencySymbol,
+  tableNumber,
+}: ProductDetailViewProps) {
   const t = useTranslations();
   const locale = useLocale();
   const currency = currencySymbol || t("common.currency");
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { items, addItem, updateQuantity, clear, total } = useMenuCart();
+  const { sessionId, requestBill, callWaiter } = useTableSession(branch.slug, tableNumber);
   const [copied, setCopied] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
 
@@ -65,11 +76,13 @@ export function ProductDetailView({ product, branch, currencySymbol }: ProductDe
     vegan: t("badges.vegan"),
   };
 
+  const tableQuery = tableNumber ? `?table=${tableNumber}` : "";
+
   return (
     <div className="min-h-screen bg-background">
       <div className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <Button variant="ghost" size="icon" asChild>
-          <Link href={`/menu/${branch.slug}`}>
+          <Link href={`/menu/${branch.slug}${tableQuery}`}>
             <ArrowLeft className="h-5 w-5" />
           </Link>
         </Button>
@@ -150,6 +163,22 @@ export function ProductDetailView({ product, branch, currencySymbol }: ProductDe
               <span className="text-lg text-muted-foreground line-through">
                 {formatPrice(product.compareAtPrice!, currency)}
               </span>
+            )}
+            {tableNumber && (
+              <Button
+                className="ms-auto"
+                onClick={() =>
+                  addItem({
+                    productId: product.id,
+                    nameAr: product.nameAr,
+                    nameEn: product.nameEn,
+                    unitPrice: product.price,
+                  })
+                }
+              >
+                <Plus className="h-4 w-4" />
+                {t("common.addToCart")}
+              </Button>
             )}
           </div>
 
@@ -240,6 +269,19 @@ export function ProductDetailView({ product, branch, currencySymbol }: ProductDe
           )}
         </div>
       </div>
+
+      <MenuCartBar
+        locale={locale}
+        currencySymbol={currencySymbol}
+        sessionId={sessionId}
+        tableNumber={tableNumber}
+        items={items}
+        total={total}
+        onUpdateQuantity={updateQuantity}
+        onClear={clear}
+        onRequestBill={requestBill}
+        onCallWaiter={callWaiter}
+      />
     </div>
   );
 }

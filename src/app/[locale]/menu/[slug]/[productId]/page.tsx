@@ -5,6 +5,7 @@ import { ProductDetailView } from "@/components/menu/product-detail-view";
 
 interface ProductPageProps {
   params: Promise<{ locale: string; slug: string; productId: string }>;
+  searchParams: Promise<{ table?: string }>;
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
@@ -23,8 +24,10 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   };
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({ params, searchParams }: ProductPageProps) {
   const { slug, productId } = await params;
+  const query = await searchParams;
+  const tableNumber = query.table ? Number(query.table) : undefined;
 
   const branch = await db.branch.findUnique({
     where: { slug, isActive: true },
@@ -54,6 +57,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       product={product}
       branch={branch}
       currencySymbol={settings?.currencySymbol}
+      tableNumber={Number.isFinite(tableNumber) ? tableNumber : undefined}
     />
   );
 }

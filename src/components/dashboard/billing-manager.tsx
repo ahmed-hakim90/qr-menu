@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { apiRequest } from "@/lib/dashboard-api";
 import { formatCurrencyAmount } from "@/lib/currency";
+import { getPlanFeatureLabels, isMenuOnlyPlan } from "@/lib/plan-features";
 import type { Plan, Subscription, SubscriptionStatus } from "@/generated/prisma";
 
 interface BillingManagerProps {
@@ -147,6 +148,10 @@ export function BillingManager({ subscription, plans, usage }: BillingManagerPro
                   {plan.priceMonthly > 0 && <span className="text-sm font-normal text-muted-foreground"> / month</span>}
                 </p>
                 <ul className="space-y-2 text-sm">
+                  <li className="flex items-center gap-2">
+                    <Check className="h-4 w-4 text-primary" />
+                    {isMenuOnlyPlan(plan) ? "Digital menu only" : getPlanFeatureLabels(plan).en}
+                  </li>
                   <li className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />{plan.maxBranches} branches</li>
                   <li className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />{plan.maxProducts} products</li>
                   <li className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />{plan.maxUsers} users</li>

@@ -4,7 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Heart } from "lucide-react";
+import { Heart, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { ProductBadges } from "./product-badges";
 import { formatPrice, cn } from "@/lib/utils";
 import type { Product, Category } from "@/generated/prisma";
@@ -17,6 +18,7 @@ interface ProductCardProps {
   product: ProductCardData;
   locale: string;
   branchSlug: string;
+  tableNumber?: number;
   labels: {
     bestSeller: string;
     new: string;
@@ -30,20 +32,25 @@ interface ProductCardProps {
   };
   isFavorite?: boolean;
   onToggleFavorite?: (id: string) => void;
+  onAddToCart?: (product: ProductCardData) => void;
 }
 
 export function ProductCard({
   product,
   locale,
   branchSlug,
+  tableNumber,
   labels,
   isFavorite = false,
   onToggleFavorite,
+  onAddToCart,
 }: ProductCardProps) {
   const [imgError, setImgError] = useState(false);
   const name = locale === "ar" ? product.nameAr : product.nameEn;
   const description = locale === "ar" ? product.descriptionAr : product.descriptionEn;
   const hasDiscount = product.compareAtPrice && product.compareAtPrice > product.price;
+
+  const tableQuery = tableNumber ? `?table=${tableNumber}` : "";
 
   return (
     <motion.div
@@ -51,7 +58,7 @@ export function ProductCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Link href={`/menu/${branchSlug}/${product.id}`} className="group block">
+      <Link href={`/menu/${branchSlug}/${product.id}${tableQuery}`} className="group block">
         <div className="relative overflow-hidden rounded-3xl bg-card border border-border/50 shadow-lg shadow-black/5 transition-all duration-300 hover:shadow-xl hover:shadow-black/10 hover:-translate-y-1">
           <div className="relative aspect-[4/3] overflow-hidden">
             {product.image && !imgError ? (
@@ -99,14 +106,28 @@ export function ProductCard({
                 {description}
               </p>
             )}
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-primary">
-                {formatPrice(product.price, labels.currency)}
-              </span>
-              {hasDiscount && (
-                <span className="text-sm text-muted-foreground line-through">
-                  {formatPrice(product.compareAtPrice!, labels.currency)}
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-lg font-bold text-primary">
+                  {formatPrice(product.price, labels.currency)}
                 </span>
+                {hasDiscount && (
+                  <span className="text-sm text-muted-foreground line-through">
+                    {formatPrice(product.compareAtPrice!, labels.currency)}
+                  </span>
+                )}
+              </div>
+              {onAddToCart && (
+                <Button
+                  size="sm"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    onAddToCart(product);
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
               )}
             </div>
           </div>

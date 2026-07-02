@@ -10,7 +10,9 @@ import {
   Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import type { Branch, Restaurant } from "@/generated/prisma";
+import { isOpenNow, parseWorkingHours } from "@/lib/working-hours";
 
 interface MenuHeaderProps {
   branch: Branch & { restaurant: Restaurant };
@@ -27,6 +29,13 @@ export function MenuHeader({ branch, locale, labels }: MenuHeaderProps) {
   const description = locale === "ar" ? branch.restaurant.descriptionAr : branch.restaurant.descriptionEn;
   const hours = locale === "ar" ? branch.hoursAr : branch.hoursEn;
   const logo = branch.logo || branch.restaurant.logo;
+  const workingHours = parseWorkingHours(branch.workingHours);
+  const openNow = workingHours ? isOpenNow(workingHours) : null;
+  const mapsUrl =
+    branch.googleMaps ||
+    (branch.latitude && branch.longitude
+      ? `https://www.google.com/maps?q=${branch.latitude},${branch.longitude}`
+      : null);
 
   return (
     <div className="relative">
@@ -77,6 +86,11 @@ export function MenuHeader({ branch, locale, labels }: MenuHeaderProps) {
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
             <Clock className="h-4 w-4 shrink-0" />
             <span>{labels.hours}: {hours}</span>
+            {openNow !== null && (
+              <Badge variant={openNow ? "success" : "secondary"}>
+                {openNow ? (locale === "ar" ? "مفتوح الآن" : "Open now") : (locale === "ar" ? "مغلق" : "Closed")}
+              </Badge>
+            )}
           </div>
         )}
 
@@ -97,9 +111,9 @@ export function MenuHeader({ branch, locale, labels }: MenuHeaderProps) {
               </a>
             </Button>
           )}
-          {branch.googleMaps && (
+          {mapsUrl && (
             <Button variant="outline" size="sm" asChild>
-              <a href={branch.googleMaps} target="_blank" rel="noopener noreferrer">
+              <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
                 <MapPin className="h-4 w-4" />
                 Maps
               </a>

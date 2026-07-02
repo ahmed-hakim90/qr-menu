@@ -93,6 +93,11 @@ export default function LoginPage() {
               {t("registerButton")}
             </Link>
           </p>
+          <p className="text-center text-sm text-muted-foreground mt-4">
+            <Link href="/auth/forgot-password" className="hover:text-primary transition-colors">
+              Forgot password?
+            </Link>
+          </p>
           <p className="text-center text-sm text-muted-foreground mt-2">
             <Link href="/" className="hover:text-primary transition-colors">
               ← Back to home

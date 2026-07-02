@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import type { Plan, Subscription, SubscriptionStatus } from "@/generated/prisma";
+import { planHasFeature, type PlanFeature } from "@/lib/plan-features";
 
 export const ACTIVE_STATUSES: SubscriptionStatus[] = ["TRIAL", "ACTIVE"];
 
@@ -14,6 +15,8 @@ export interface TenantLimits {
   maxProducts: number;
   maxUsers: number;
   customDomain: boolean;
+  hasTables: boolean;
+  hasOrdering: boolean;
 }
 
 export async function getRestaurantSubscription(restaurantId: string) {
@@ -42,6 +45,8 @@ export function getEffectiveLimits(
       maxProducts: 30,
       maxUsers: 2,
       customDomain: false,
+      hasTables: false,
+      hasOrdering: false,
     };
   }
 
@@ -50,6 +55,8 @@ export function getEffectiveLimits(
     maxProducts: subscription.plan.maxProducts,
     maxUsers: subscription.plan.maxUsers,
     customDomain: subscription.plan.customDomain,
+    hasTables: subscription.plan.hasTables,
+    hasOrdering: subscription.plan.hasOrdering,
   };
 }
 
@@ -76,5 +83,14 @@ export async function assertPlanLimit(
 
   if (!isWithinLimit(usage[resource], limits[limitKey])) {
     throw new Error(`Plan limit reached for ${resource}. Upgrade your plan to continue.`);
+  }
+}
+
+export async function assertPlanFeature(restaurantId: string, feature: PlanFeature) {
+  const subscription = await getRestaurantSubscription(restaurantId);
+  const limits = getEffectiveLimits(subscription);
+
+  if (!planHasFeature(limits, feature)) {
+    throw new Error(`Your current plan does not include ${feature}. Upgrade to continue.`);
   }
 }

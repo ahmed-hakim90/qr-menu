@@ -1,5 +1,6 @@
 "use client";
 
+import type { ComponentType } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -13,6 +14,7 @@ import {
   Tag,
   Plus,
   Ruler,
+  UtensilsCrossed,
   Image,
   Film,
   QrCode,
@@ -22,36 +24,65 @@ import {
   LogOut,
   Menu,
   X,
+  ClipboardList,
+  Compass,
+  Wallet,
+  BarChart3,
+  CalendarDays,
+  Grid3x3,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { hasPermission } from "@/lib/permissions";
+import type { UserRole } from "@/generated/prisma";
 
-const navItems = [
-  { href: "/dashboard", icon: LayoutDashboard, key: "overview" },
-  { href: "/dashboard/branches", icon: Building2, key: "branches" },
-  { href: "/dashboard/categories", icon: FolderOpen, key: "categories" },
-  { href: "/dashboard/products", icon: Package, key: "products" },
-  { href: "/dashboard/offers", icon: Tag, key: "offers" },
-  { href: "/dashboard/addons", icon: Plus, key: "addons" },
-  { href: "/dashboard/sizes", icon: Ruler, key: "sizes" },
-  { href: "/dashboard/gallery", icon: Image, key: "gallery" },
-  { href: "/dashboard/media", icon: Film, key: "media" },
-  { href: "/dashboard/qr-codes", icon: QrCode, key: "qrCodes" },
-  { href: "/dashboard/domain", icon: Globe, key: "domain" },
-  { href: "/dashboard/billing", icon: CreditCard, key: "billing" },
-  { href: "/dashboard/appearance", icon: Palette, key: "appearance" },
-  { href: "/dashboard/settings", icon: Settings, key: "settings" },
-  { href: "/dashboard/users", icon: Users, key: "users" },
-] as const;
+type NavFeature = "tables";
+
+type NavItem = {
+  href: string;
+  icon: ComponentType<{ className?: string }>;
+  key: string;
+  minRole: UserRole;
+  feature?: NavFeature;
+};
+
+const navItems: NavItem[] = [
+  { href: "/dashboard", icon: LayoutDashboard, key: "overview", minRole: "VIEWER" },
+  { href: "/dashboard/analytics", icon: BarChart3, key: "analytics", minRole: "MANAGER" },
+  { href: "/dashboard/orders", icon: ClipboardList, key: "orders", minRole: "CAPTAIN" },
+  { href: "/dashboard/captain", icon: Compass, key: "captain", minRole: "CAPTAIN" },
+  { href: "/dashboard/cashier", icon: Wallet, key: "cashier", minRole: "CASHIER" },
+  { href: "/dashboard/branches", icon: Building2, key: "branches", minRole: "VIEWER" },
+  { href: "/dashboard/tables", icon: UtensilsCrossed, key: "tables", minRole: "MANAGER", feature: "tables" },
+  { href: "/dashboard/floor", icon: Grid3x3, key: "floor", minRole: "MANAGER", feature: "tables" },
+  { href: "/dashboard/reservations", icon: CalendarDays, key: "reservations", minRole: "MANAGER", feature: "tables" },
+  { href: "/dashboard/categories", icon: FolderOpen, key: "categories", minRole: "VIEWER" },
+  { href: "/dashboard/products", icon: Package, key: "products", minRole: "VIEWER" },
+  { href: "/dashboard/offers", icon: Tag, key: "offers", minRole: "VIEWER" },
+  { href: "/dashboard/addons", icon: Plus, key: "addons", minRole: "VIEWER" },
+  { href: "/dashboard/sizes", icon: Ruler, key: "sizes", minRole: "VIEWER" },
+  { href: "/dashboard/gallery", icon: Image, key: "gallery", minRole: "VIEWER" },
+  { href: "/dashboard/media", icon: Film, key: "media", minRole: "VIEWER" },
+  { href: "/dashboard/qr-codes", icon: QrCode, key: "qrCodes", minRole: "VIEWER" },
+  { href: "/dashboard/domain", icon: Globe, key: "domain", minRole: "MANAGER" },
+  { href: "/dashboard/billing", icon: CreditCard, key: "billing", minRole: "MANAGER" },
+  { href: "/dashboard/appearance", icon: Palette, key: "appearance", minRole: "MANAGER" },
+  { href: "/dashboard/settings", icon: Settings, key: "settings", minRole: "MANAGER" },
+  { href: "/dashboard/users", icon: Users, key: "users", minRole: "MANAGER" },
+];
 
 interface DashboardSidebarProps {
   userName: string;
+  userRole: UserRole;
+  features?: {
+    hasTables: boolean;
+  };
 }
 
-export function DashboardSidebar({ userName }: DashboardSidebarProps) {
+export function DashboardSidebar({ userName, userRole, features }: DashboardSidebarProps) {
   const t = useTranslations("dashboard");
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -68,7 +99,9 @@ export function DashboardSidebar({ userName }: DashboardSidebarProps) {
         <p className="text-sm text-muted-foreground mt-2">{userName}</p>
       </div>
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {navItems.map(({ href, icon: Icon, key }) => {
+        {navItems.map(({ href, icon: Icon, key, feature, minRole }) => {
+          if (!hasPermission(userRole, [minRole])) return null;
+          if (feature === "tables" && !features?.hasTables) return null;
           const isActive = normalizedPath === href || (href !== "/dashboard" && normalizedPath.startsWith(href));
           return (
             <Link

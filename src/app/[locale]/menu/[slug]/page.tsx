@@ -5,6 +5,7 @@ import { MenuView } from "@/components/menu/menu-view";
 
 interface MenuPageProps {
   params: Promise<{ locale: string; slug: string }>;
+  searchParams: Promise<{ table?: string }>;
 }
 
 export async function generateMetadata({ params }: MenuPageProps): Promise<Metadata> {
@@ -28,8 +29,10 @@ export async function generateMetadata({ params }: MenuPageProps): Promise<Metad
   };
 }
 
-export default async function MenuPage({ params }: MenuPageProps) {
+export default async function MenuPage({ params, searchParams }: MenuPageProps) {
   const { slug } = await params;
+  const query = await searchParams;
+  const tableNumber = query.table ? Number(query.table) : undefined;
 
   const branch = await db.branch.findUnique({
     where: { slug, isActive: true },
@@ -112,6 +115,7 @@ export default async function MenuPage({ params }: MenuPageProps) {
         categories={categories}
         allProducts={allProducts}
         currencySymbol={settings?.currencySymbol}
+        tableNumber={Number.isFinite(tableNumber) ? tableNumber : undefined}
       />
     </>
   );

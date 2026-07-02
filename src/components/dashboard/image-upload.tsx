@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { Upload, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 interface ImageUploadProps {
@@ -70,23 +69,15 @@ export function ImageUpload({ value, onChange, aspect = "square", label }: Image
           )}
         </div>
 
-        <div className="flex-1 space-y-2">
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            disabled={uploading}
-            className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:opacity-50"
-          >
-            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-            {uploading ? "Uploading..." : "Upload image"}
-          </button>
-          <Input
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="or paste image URL"
-            className="text-xs"
-          />
-        </div>
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+          className="inline-flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-muted disabled:opacity-50"
+        >
+          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+          {uploading ? "Uploading..." : "Upload image"}
+        </button>
 
         <input
           ref={inputRef}

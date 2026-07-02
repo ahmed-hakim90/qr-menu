@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import { RowActions, ToggleField } from "./entity-actions";
 import { ImageUpload } from "./image-upload";
 import { apiRequest } from "@/lib/dashboard-api";
@@ -110,6 +111,13 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
                 value={form.image}
                 onChange={(url) => setForm({ ...form, image: url })}
               />
+              <label className="flex items-center gap-2 text-sm">
+                <Switch
+                  checked={form.isVisible}
+                  onCheckedChange={(isVisible) => setForm({ ...form, isVisible })}
+                />
+                Visible to customers
+              </label>
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
                 <Button type="submit" disabled={saving}>{saving ? "Saving..." : "Save"}</Button>

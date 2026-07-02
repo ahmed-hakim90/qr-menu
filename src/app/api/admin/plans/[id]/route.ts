@@ -11,6 +11,8 @@ const planUpdateSchema = z.object({
   maxProducts: z.coerce.number().int().min(1).optional(),
   maxUsers: z.coerce.number().int().min(1).optional(),
   customDomain: z.boolean().optional(),
+  hasTables: z.boolean().optional(),
+  hasOrdering: z.boolean().optional(),
   sortOrder: z.coerce.number().int().optional(),
   isActive: z.boolean().optional(),
 });

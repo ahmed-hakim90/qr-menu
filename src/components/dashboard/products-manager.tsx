@@ -60,6 +60,7 @@ const emptyForm = {
   isCold: false,
   calories: "",
   prepTime: "",
+  spiceLevel: "",
 };
 
 export function ProductsManager({
@@ -124,6 +125,7 @@ export function ProductsManager({
       isCold: product.isCold,
       calories: product.calories ? String(product.calories) : "",
       prepTime: product.prepTime ? String(product.prepTime) : "",
+      spiceLevel: product.spiceLevel ? String(product.spiceLevel) : "",
     });
     setBranchIds(product.productBranches?.map((item) => item.branchId) || branches.map((branch) => branch.id));
     setOpen(true);
@@ -145,6 +147,7 @@ export function ProductsManager({
         compareAtPrice: form.compareAtPrice ? Number(form.compareAtPrice) : null,
         calories: form.calories ? Number(form.calories) : null,
         prepTime: form.prepTime ? Number(form.prepTime) : null,
+        spiceLevel: form.spiceLevel ? Number(form.spiceLevel) : null,
         branchIds,
       };
 
@@ -280,6 +283,64 @@ export function ProductsManager({
                     {label}
                   </label>
                 ))}
+              </div>
+
+              {form.isSpicy && (
+                <div className="space-y-2">
+                  <Label>Spice Level</Label>
+                  <Select
+                    value={form.spiceLevel}
+                    onChange={(e) => setForm({ ...form, spiceLevel: e.target.value })}
+                  >
+                    <option value="">Select level</option>
+                    <option value="1">🌶️ Mild</option>
+                    <option value="2">🌶️🌶️ Medium</option>
+                    <option value="3">🌶️🌶️🌶️ Hot</option>
+                    <option value="4">🌶️🌶️🌶️🌶️ Very Hot</option>
+                    <option value="5">🌶️🌶️🌶️🌶️🌶️ Extreme</option>
+                  </Select>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Prep Time</Label>
+                  <Select
+                    value={form.prepTime}
+                    onChange={(e) => setForm({ ...form, prepTime: e.target.value })}
+                  >
+                    <option value="">Not specified</option>
+                    <option value="5">5 min</option>
+                    <option value="10">10 min</option>
+                    <option value="15">15 min</option>
+                    <option value="20">20 min</option>
+                    <option value="30">30 min</option>
+                    <option value="45">45 min</option>
+                    <option value="60">60 min</option>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Calories</Label>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {[150, 250, 350, 500, 750].map((cal) => (
+                      <Button
+                        key={cal}
+                        type="button"
+                        size="sm"
+                        variant={form.calories === String(cal) ? "default" : "outline"}
+                        onClick={() => setForm({ ...form, calories: String(cal) })}
+                      >
+                        {cal}
+                      </Button>
+                    ))}
+                  </div>
+                  <Input
+                    type="number"
+                    placeholder="Custom calories"
+                    value={form.calories}
+                    onChange={(e) => setForm({ ...form, calories: e.target.value })}
+                  />
+                </div>
               </div>
               <div className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>

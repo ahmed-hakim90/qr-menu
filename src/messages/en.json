@@ -14,6 +14,7 @@
     "delete": "Delete",
     "edit": "Edit",
     "add": "Add",
+    "addToCart": "Add to cart",
     "loading": "Loading...",
     "noResults": "No results found",
     "currency": "ج.م",
@@ -81,7 +82,14 @@
   },
   "dashboard": {
     "overview": "Overview",
+    "analytics": "Analytics",
+    "orders": "Orders",
+    "captain": "Captain",
+    "cashier": "Cashier",
+    "floor": "Floor Designer",
+    "reservations": "Reservations",
     "branches": "Branches",
+    "tables": "Tables",
     "categories": "Categories",
     "products": "Products",
     "offers": "Offers",
@@ -99,7 +107,11 @@
     "totalProducts": "Total Products",
     "totalCategories": "Total Categories",
     "totalBranches": "Total Branches",
-    "activeOffers": "Active Offers"
+    "activeOffers": "Active Offers",
+    "todaySales": "Today's Sales",
+    "openOrders": "Open Orders",
+    "activeTables": "Active Tables",
+    "reservationsToday": "Reservations Today"
   },
   "auth": {
     "loginTitle": "Login",

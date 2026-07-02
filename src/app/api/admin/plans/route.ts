@@ -12,6 +12,8 @@ const planSchema = z.object({
   maxProducts: z.coerce.number().int().min(1),
   maxUsers: z.coerce.number().int().min(1),
   customDomain: z.boolean().optional(),
+  hasTables: z.boolean().optional(),
+  hasOrdering: z.boolean().optional(),
   sortOrder: z.coerce.number().int().optional(),
   isActive: z.boolean().optional(),
 });

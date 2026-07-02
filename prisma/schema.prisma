@@ -10,8 +10,63 @@ datasource db {
 enum UserRole {
   OWNER
   MANAGER
+  CAPTAIN
   CASHIER
   VIEWER
+}
+
+
+enum TableStatus {
+  AVAILABLE
+  OCCUPIED
+  WAITING_BILL
+  RESERVED
+}
+
+enum TableSessionStatus {
+  OPEN
+  WAITING_BILL
+  CLOSED
+}
+
+enum OrderStatus {
+  NEW
+  PREPARING
+  READY
+  DELIVERED
+  WAITING_BILL
+  PAID
+  CANCELLED
+}
+
+enum PaymentProvider {
+  CASH
+  PAYMOB
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  SEATED
+  CANCELLED
+  NO_SHOW
+}
+
+enum NotificationType {
+  ORDER_CREATED
+  ORDER_UPDATED
+  WAITER_CALLED
+  BILL_REQUESTED
+  PAYMENT_UPDATED
+  RESERVATION_CREATED
 }
 
 enum SubscriptionStatus {
@@ -32,6 +87,8 @@ model Plan {
   maxProducts   Int
   maxUsers      Int
   customDomain  Boolean        @default(false)
+  hasTables     Boolean        @default(false)
+  hasOrdering   Boolean        @default(false)
   sortOrder     Int            @default(0)
   isActive      Boolean        @default(true)
   subscriptions Subscription[]
@@ -88,6 +145,13 @@ model Restaurant {
   offers        Offer[]
   galleries     Gallery[]
   media         Media[]
+  diningTables  DiningTable[]
+  floors        Floor[]
+  tableSessions TableSession[]
+  orders        Order[]
+  payments      Payment[]
+  reservations  Reservation[]
+  notifications Notification[]
   settings      Settings?
   subscription  Subscription?
 }
@@ -109,6 +173,7 @@ model Branch {
   googleMaps      String?
   hoursAr         String?
   hoursEn         String?
+  workingHours    Json?
   coverImage      String?
   logo            String?
   primaryColor    String          @default("#1a1a2e")
@@ -117,11 +182,42 @@ model Branch {
   isActive        Boolean         @default(true)
   sortOrder       Int             @default(0)
   qrCodes         QRCode[]
+  diningTables    DiningTable[]
+  floors          Floor[]
+  tableSessions   TableSession[]
+  orders          Order[]
+  payments        Payment[]
+  reservations    Reservation[]
+  notifications   Notification[]
   productBranches ProductBranch[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
   @@index([restaurantId])
+}
+
+model DiningTable {
+  id           String       @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  branchId     String
+  branch       Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  name         String
+  number       Int
+  seats        Int?
+  status       TableStatus  @default(AVAILABLE)
+  isActive     Boolean      @default(true)
+  sortOrder    Int          @default(0)
+  floorItems   FloorTable[]
+  sessions     TableSession[]
+  reservations Reservation[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([branchId, number])
+  @@index([restaurantId])
+  @@index([branchId])
+  @@index([status])
 }
 
 model Category {
@@ -176,6 +272,7 @@ model Product {
   productSizes    ProductSize[]
   productAddons   ProductAddon[]
   productBranches ProductBranch[]
+  orderItems      OrderItem[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
@@ -297,10 +394,24 @@ model User {
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   isActive     Boolean    @default(true)
+  pushSubscriptions PushSubscription[]
+  notifications Notification[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
   @@index([restaurantId])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Settings {
@@ -311,11 +422,208 @@ model Settings {
   currencySymbol String     @default("ج.م")
   taxRate        Float      @default(15)
   language       String     @default("ar")
-  theme          String     @default("light")
-  fontFamily     String     @default("Inter")
-  borderRadius   String     @default("1rem")
+  theme                 String     @default("light")
+  fontFamily            String     @default("Inter")
+  borderRadius          String     @default("1rem")
+  notificationsEnabled  Boolean    @default(false)
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
+}
+
+model Floor {
+  id           String       @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  branchId     String
+  branch       Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  name         String
+  width        Int          @default(1200)
+  height       Int          @default(800)
+  tables       FloorTable[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([restaurantId])
+  @@index([branchId])
+}
+
+model FloorTable {
+  id        String      @id @default(cuid())
+  floorId   String
+  floor     Floor       @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  tableId   String
+  table     DiningTable @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  shape     String      @default("rectangle")
+  x         Float       @default(80)
+  y         Float       @default(80)
+  width     Float       @default(120)
+  height    Float       @default(80)
+  rotation  Float       @default(0)
+  color     String      @default("#2563eb")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([floorId, tableId])
+  @@index([tableId])
+}
+
+model TableSession {
+  id             String             @id @default(cuid())
+  restaurantId   String
+  restaurant     Restaurant         @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  branchId       String
+  branch         Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  tableId        String
+  table          DiningTable        @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  status         TableSessionStatus @default(OPEN)
+  guestName      String?
+  guestPhone     String?
+  guestCount     Int?
+  subtotal       Float              @default(0)
+  taxTotal       Float              @default(0)
+  serviceTotal   Float              @default(0)
+  total          Float              @default(0)
+  openedAt       DateTime           @default(now())
+  billRequestedAt DateTime?
+  closedAt       DateTime?
+  orders         Order[]
+  payments       Payment[]
+  notifications  Notification[]
+
+  @@index([restaurantId])
+  @@index([branchId])
+  @@index([tableId])
+  @@index([status])
+}
+
+model Order {
+  id           String       @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  branchId     String
+  branch       Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  sessionId    String
+  session      TableSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  status       OrderStatus  @default(NEW)
+  customerNote String?
+  subtotal     Float
+  taxTotal     Float        @default(0)
+  total        Float
+  items        OrderItem[]
+  payments     Payment[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([restaurantId])
+  @@index([branchId])
+  @@index([sessionId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id           String   @id @default(cuid())
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId    String?
+  product      Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  nameAr       String
+  nameEn       String
+  quantity     Int
+  unitPrice    Float
+  total        Float
+  notes        String?
+  modifiers    Json?
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Payment {
+  id                  String          @id @default(cuid())
+  restaurantId        String
+  restaurant          Restaurant      @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  branchId            String
+  branch              Branch          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  sessionId           String
+  session             TableSession    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  orderId             String?
+  order               Order?          @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  provider            PaymentProvider
+  status              PaymentStatus   @default(PENDING)
+  amount              Float
+  currency            String          @default("EGP")
+  providerReference   String?
+  providerCheckoutUrl String?
+  rawResponse         Json?
+  paidAt              DateTime?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  @@index([restaurantId])
+  @@index([branchId])
+  @@index([sessionId])
+  @@index([orderId])
+  @@index([provider, status])
+}
+
+model Reservation {
+  id             String            @id @default(cuid())
+  restaurantId   String
+  restaurant     Restaurant        @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  branchId       String
+  branch         Branch            @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  tableId        String?
+  table          DiningTable?      @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  customerName   String
+  customerPhone  String
+  partySize      Int
+  startsAt       DateTime
+  notes          String?
+  status         ReservationStatus @default(PENDING)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([restaurantId])
+  @@index([branchId])
+  @@index([tableId])
+  @@index([startsAt])
+  @@index([status])
+}
+
+model Notification {
+  id           String           @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant       @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  branchId     String?
+  branch       Branch?          @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  sessionId    String?
+  session      TableSession?    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId       String?
+  user         User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  type         NotificationType
+  title        String
+  body         String
+  data         Json?
+  readAt       DateTime?
+  createdAt    DateTime         @default(now())
+
+  @@index([restaurantId])
+  @@index([branchId])
+  @@index([sessionId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Gallery {
