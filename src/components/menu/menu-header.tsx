@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
@@ -25,6 +26,7 @@ interface MenuHeaderProps {
   sessionId?: string | null;
   onRequestBill?: () => Promise<unknown>;
   onCallWaiter?: () => Promise<unknown>;
+  reservationActions?: ReactNode;
   labels: {
     hours: string;
     contact: string;
@@ -42,6 +44,7 @@ export function MenuHeader({
   sessionId,
   onRequestBill,
   onCallWaiter,
+  reservationActions,
   labels,
 }: MenuHeaderProps) {
   const name = locale === "ar" ? branch.nameAr : branch.nameEn;
@@ -134,7 +137,7 @@ export function MenuHeader({
                   </a>
                 </Button>
               )}
-              {branch.reservationPhone && (
+              {!reservationActions && branch.reservationPhone && (
                 <Button variant="outline" size="sm" asChild className="h-9 border-[#d7c7b2] bg-[#fffaf1] text-xs text-[#2a160f] sm:text-sm">
                   <a href={`tel:${branch.reservationPhone}`}>
                     <Phone className="h-4 w-4" />
@@ -159,6 +162,8 @@ export function MenuHeader({
                 </Button>
               )}
             </div>
+
+            {reservationActions}
 
             {tableNumber && onRequestBill && onCallWaiter && (
               <MenuTableActions
@@ -265,7 +270,7 @@ export function MenuHeader({
               </a>
             </Button>
           )}
-          {branch.reservationPhone && (
+          {!reservationActions && branch.reservationPhone && (
             <Button variant="outline" size="sm" asChild>
               <a href={`tel:${branch.reservationPhone}`}>
                 <Phone className="h-4 w-4" />
@@ -290,6 +295,8 @@ export function MenuHeader({
             </Button>
           )}
         </div>
+
+        {reservationActions}
 
         {tableNumber && onRequestBill && onCallWaiter && (
           <MenuTableActions

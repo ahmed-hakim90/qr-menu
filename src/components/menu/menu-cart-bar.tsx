@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import type { CartItem } from "@/hooks/use-menu-cart";
 import type { MenuThemeSlug } from "@/lib/menu-themes";
+import { MenuTableActions } from "./menu-table-actions";
 
 interface MenuCartBarProps {
   locale: string;
@@ -20,6 +21,8 @@ interface MenuCartBarProps {
   total: number;
   onUpdateQuantity: (productId: string, quantity: number) => void;
   onClear: () => void;
+  onRequestBill?: () => Promise<unknown>;
+  onCallWaiter?: () => Promise<unknown>;
 }
 
 export function MenuCartBar({
@@ -32,6 +35,8 @@ export function MenuCartBar({
   total,
   onUpdateQuantity,
   onClear,
+  onRequestBill,
+  onCallWaiter,
 }: MenuCartBarProps) {
   const [open, setOpen] = useState(false);
   const [note, setNote] = useState("");
@@ -171,6 +176,15 @@ export function MenuCartBar({
                     ? "إرسال الطلب"
                     : "Submit Order"}
               </Button>
+              {onRequestBill && onCallWaiter && (
+                <MenuTableActions
+                  locale={locale}
+                  menuTheme={menuTheme}
+                  sessionId={sessionId}
+                  onRequestBill={onRequestBill}
+                  onCallWaiter={onCallWaiter}
+                />
+              )}
             </CardContent>
           </Card>
         </div>

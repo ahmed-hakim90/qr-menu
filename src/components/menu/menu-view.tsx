@@ -169,6 +169,29 @@ export function MenuView({
         sessionId={sessionId}
         onRequestBill={requestBill}
         onCallWaiter={callWaiter}
+        reservationActions={
+          !tableNumber ? (
+            <MenuReservation
+              branchSlug={branch.slug}
+              locale={locale}
+              reservationPhone={branch.reservationPhone}
+              menuTheme={menuTheme}
+              labels={{
+                book: t("menu.bookTable"),
+                title: t("menu.reservationTitle"),
+                name: t("menu.reservationName"),
+                phone: t("menu.reservationCustomerPhone"),
+                partySize: t("menu.reservationPartySize"),
+                dateTime: t("menu.reservationDateTime"),
+                notes: t("menu.reservationNotes"),
+                submit: t("menu.reservationSubmit"),
+                submitting: t("menu.reservationSubmitting"),
+                success: t("menu.reservationSuccess"),
+                callToReserve: t("menu.callToReserve"),
+              }}
+            />
+          ) : undefined
+        }
         labels={{
           hours: t("menu.hours"),
           contact: t("menu.contact"),
@@ -282,27 +305,6 @@ export function MenuView({
         onUpdateQuantity={updateQuantity}
         onClear={clear}
       />
-
-      {!tableNumber && (
-        <MenuReservation
-          branchSlug={branch.slug}
-          locale={locale}
-          reservationPhone={branch.reservationPhone}
-          labels={{
-            book: t("menu.bookTable"),
-            title: t("menu.reservationTitle"),
-            name: t("menu.reservationName"),
-            phone: t("menu.reservationCustomerPhone"),
-            partySize: t("menu.reservationPartySize"),
-            dateTime: t("menu.reservationDateTime"),
-            notes: t("menu.reservationNotes"),
-            submit: t("menu.reservationSubmit"),
-            submitting: t("menu.reservationSubmitting"),
-            success: t("menu.reservationSuccess"),
-            callToReserve: t("menu.callToReserve"),
-          }}
-        />
-      )}
     </div>
   );
 }
