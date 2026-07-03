@@ -9,6 +9,8 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  Paintbrush,
+  Palette,
   Shield,
   X,
 } from "lucide-react";
@@ -20,14 +22,22 @@ const navItems = [
   { href: "/admin", icon: LayoutDashboard, label: "Overview" },
   { href: "/admin/restaurants", icon: Building2, label: "Restaurants" },
   { href: "/admin/subscriptions", icon: CreditCard, label: "Subscriptions" },
+  { href: "/admin/theme-purchases", icon: Palette, label: "Theme Purchases" },
+  { href: "/admin/menu-themes", icon: Paintbrush, label: "Menu Themes" },
   { href: "/admin/plans", icon: Layers, label: "Plans" },
 ] as const;
 
 interface AdminSidebarProps {
   adminName: string;
+  pendingPayments?: number;
+  pendingThemePurchases?: number;
 }
 
-export function AdminSidebar({ adminName }: AdminSidebarProps) {
+export function AdminSidebar({
+  adminName,
+  pendingPayments = 0,
+  pendingThemePurchases = 0,
+}: AdminSidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -56,7 +66,17 @@ export function AdminSidebar({ adminName }: AdminSidebarProps) {
               )}
             >
               <Icon className="h-4 w-4" />
-              {label}
+              <span className="flex-1">{label}</span>
+              {href === "/admin/subscriptions" && pendingPayments > 0 && (
+                <span className="rounded-full bg-amber-500 px-2 py-0.5 text-xs font-semibold text-white">
+                  {pendingPayments}
+                </span>
+              )}
+              {href === "/admin/theme-purchases" && pendingThemePurchases > 0 && (
+                <span className="rounded-full bg-amber-500 px-2 py-0.5 text-xs font-semibold text-white">
+                  {pendingThemePurchases}
+                </span>
+              )}
             </Link>
           );
         })}

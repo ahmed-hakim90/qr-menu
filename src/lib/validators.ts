@@ -247,6 +247,16 @@ export const settingsSchema = z.object({
   notificationsEnabled: z.boolean().optional(),
 });
 
+export const menuThemeSelectSchema = z.object({
+  menuTheme: z.string().min(2).regex(/^[a-z0-9-]+$/),
+});
+
+export const menuThemePurchaseSchema = z.object({
+  themeSlug: z.string().min(2).regex(/^[a-z0-9-]+$/),
+  paymentReference: z.string().min(1),
+  paymentNotes: z.string().optional(),
+});
+
 export const pushSubscriptionSchema = z.object({
   endpoint: z.string().url(),
   keys: z.object({

@@ -2,12 +2,12 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getTodayAnalytics } from "@/features/analytics/services/analytics-service";
 import { getTranslations } from "next-intl/server";
+import { ShareMenuLink } from "@/components/dashboard/share-menu-link";
 import Link from "next/link";
 import {
   Package,
   FolderOpen,
   Building2,
-  Tag,
   ClipboardList,
   Wallet,
   BarChart3,
@@ -22,19 +22,27 @@ export default async function DashboardPage() {
 
   if (!session) return null;
 
-  const [products, categories, branches, offers, analytics] = await Promise.all([
-    db.product.count({ where: { restaurantId: session.restaurantId } }),
-    db.category.count({ where: { restaurantId: session.restaurantId } }),
-    db.branch.count({ where: { restaurantId: session.restaurantId } }),
-    db.offer.count({ where: { restaurantId: session.restaurantId, isActive: true } }),
-    getTodayAnalytics(session.restaurantId),
-  ]);
+  const [products, categories, branchCount, analytics, branches, restaurant] =
+    await Promise.all([
+      db.product.count({ where: { restaurantId: session.restaurantId } }),
+      db.category.count({ where: { restaurantId: session.restaurantId } }),
+      db.branch.count({ where: { restaurantId: session.restaurantId } }),
+      getTodayAnalytics(session.restaurantId),
+      db.branch.findMany({
+        where: { restaurantId: session.restaurantId, isActive: true },
+        select: { slug: true, nameEn: true, nameAr: true },
+        orderBy: { sortOrder: "asc" },
+      }),
+      db.restaurant.findUnique({
+        where: { id: session.restaurantId },
+        select: { customDomain: true },
+      }),
+    ]);
 
   const stats = [
     { label: t("totalProducts"), value: products, icon: Package },
     { label: t("totalCategories"), value: categories, icon: FolderOpen },
-    { label: t("totalBranches"), value: branches, icon: Building2 },
-    { label: t("activeOffers"), value: offers, icon: Tag },
+    { label: t("totalBranches"), value: branchCount, icon: Building2 },
     { label: t("todaySales"), value: `${analytics.salesTotal.toFixed(2)} EGP`, icon: BarChart3 },
     { label: t("openOrders"), value: analytics.openOrdersCount, icon: ClipboardList },
     { label: t("activeTables"), value: analytics.occupiedTables, icon: UtensilsCrossed },
@@ -43,6 +51,11 @@ export default async function DashboardPage() {
 
   return (
     <div>
+      <ShareMenuLink
+        branches={branches}
+        customDomain={restaurant?.customDomain}
+      />
+
       <h1 className="text-3xl font-bold mb-2">
         {t("welcome")}, {session.name}
       </h1>

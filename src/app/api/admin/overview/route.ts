@@ -9,12 +9,14 @@ export async function GET() {
   const [
     restaurants,
     pendingSubscriptions,
+    pendingThemePurchases,
     activeSubscriptions,
     totalProducts,
     totalBranches,
   ] = await Promise.all([
     db.restaurant.count(),
     db.subscription.count({ where: { status: "PENDING" } }),
+    db.themePurchase.count({ where: { status: "PENDING" } }),
     db.subscription.count({ where: { status: { in: ["ACTIVE", "TRIAL"] } } }),
     db.product.count(),
     db.branch.count(),
@@ -25,6 +27,7 @@ export async function GET() {
     stats: {
       restaurants,
       pendingSubscriptions,
+      pendingThemePurchases,
       activeSubscriptions,
       totalProducts,
       totalBranches,

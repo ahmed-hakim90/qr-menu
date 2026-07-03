@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireSession } from "@/lib/api-auth";
-import { updateUser } from "@/features/auth/services/user-service";
+import { deleteUser, updateUser } from "@/features/auth/services/user-service";
 import { userUpdateSchema } from "@/lib/validators";
 
 interface RouteParams {
@@ -24,6 +24,23 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Failed to update user" },
+      { status: 400 }
+    );
+  }
+}
+
+export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+  const { session, error } = await requireSession("OWNER");
+  if (error) return error;
+
+  const { id } = await params;
+
+  try {
+    await deleteUser(id, session!.restaurantId, session!.id);
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Failed to delete user" },
       { status: 400 }
     );
   }

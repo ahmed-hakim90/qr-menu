@@ -47,6 +47,7 @@ type NavItem = {
   key: string;
   minRole: UserRole;
   feature?: NavFeature;
+  hidden?: boolean;
 };
 
 const navItems: NavItem[] = [
@@ -64,12 +65,12 @@ const navItems: NavItem[] = [
   // Menu content
   { href: "/dashboard/categories", icon: FolderOpen, key: "categories", minRole: "VIEWER" },
   { href: "/dashboard/products", icon: Package, key: "products", minRole: "VIEWER" },
-  { href: "/dashboard/offers", icon: Tag, key: "offers", minRole: "VIEWER" },
+  { href: "/dashboard/offers", icon: Tag, key: "offers", minRole: "VIEWER", hidden: true },
   { href: "/dashboard/addons", icon: Plus, key: "addons", minRole: "VIEWER" },
   { href: "/dashboard/sizes", icon: Ruler, key: "sizes", minRole: "VIEWER" },
   // Media
-  { href: "/dashboard/gallery", icon: Image, key: "gallery", minRole: "VIEWER" },
-  { href: "/dashboard/media", icon: Film, key: "media", minRole: "VIEWER" },
+  { href: "/dashboard/gallery", icon: Image, key: "gallery", minRole: "VIEWER", hidden: true },
+  { href: "/dashboard/media", icon: Film, key: "media", minRole: "VIEWER", hidden: true },
   // Customer-facing
   { href: "/dashboard/qr-codes", icon: QrCode, key: "qrCodes", minRole: "VIEWER" },
   { href: "/dashboard/appearance", icon: Palette, key: "appearance", minRole: "MANAGER" },
@@ -106,7 +107,8 @@ export function DashboardSidebar({ userName, userRole, features }: DashboardSide
         <p className="text-sm text-muted-foreground mt-2">{userName}</p>
       </div>
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {navItems.map(({ href, icon: Icon, key, feature, minRole }) => {
+        {navItems.map(({ href, icon: Icon, key, feature, minRole, hidden }) => {
+          if (hidden) return null;
           if (!hasPermission(userRole, [minRole])) return null;
           if (feature === "tables" && !features?.hasTables) return null;
           const isActive = normalizedPath === href || (href !== "/dashboard" && normalizedPath.startsWith(href));

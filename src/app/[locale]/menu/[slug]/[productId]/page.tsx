@@ -52,12 +52,23 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
     where: { restaurantId: branch.restaurantId },
   });
 
+  const themePurchases = await db.themePurchase.findMany({
+    where: { restaurantId: branch.restaurantId, status: "ACTIVE" },
+    select: { themeSlug: true, status: true },
+  });
+
+  const { resolveMenuThemeForDisplay } = await import(
+    "@/features/themes/services/theme-service"
+  );
+  const menuTheme = await resolveMenuThemeForDisplay(settings?.menuTheme, themePurchases);
+
   return (
     <ProductDetailView
       product={product}
       branch={branch}
       currencySymbol={settings?.currencySymbol}
       tableNumber={Number.isFinite(tableNumber) ? tableNumber : undefined}
+      menuTheme={menuTheme}
     />
   );
 }

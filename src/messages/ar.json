@@ -132,6 +132,29 @@
     "selectBranch": "اختر الفرع",
     "openMenu": "افتح القائمة"
   },
+  "appearance": {
+    "title": "مظهر القائمة",
+    "subtitle": "اختر تصميم قائمتك الرقمية. الثيمات المميزة تتطلب شراء لمرة واحدة.",
+    "premium": "مميز",
+    "active": "مفعّل",
+    "oneTime": "مرة واحدة",
+    "pendingPayment": "بانتظار تأكيد الدفع",
+    "applyTheme": "تطبيق الثيم",
+    "applying": "جارٍ التطبيق...",
+    "currentTheme": "الثيم الحالي",
+    "purchaseToUnlock": "اشترِ هذا الثيم لفتحه",
+    "paymentReference": "مرجع الدفع",
+    "paymentReferencePlaceholder": "رقم التحويل أو المرجع",
+    "paymentNotes": "ملاحظات (اختياري)",
+    "paymentNotesPlaceholder": "أي تفاصيل إضافية عن الدفع",
+    "purchase": "شراء الثيم",
+    "submitting": "جارٍ الإرسال...",
+    "themeApplied": "تم تطبيق الثيم بنجاح",
+    "selectFailed": "تعذّر تطبيق الثيم",
+    "purchaseSubmitted": "تم إرسال طلب الشراء — سيتم التفعيل بعد تأكيد الدفع",
+    "purchaseFailed": "تعذّر إرسال طلب الشراء",
+    "paymentRequired": "مرجع الدفع مطلوب"
+  },
   "auth": {
     "loginTitle": "تسجيل الدخول",
     "email": "البريد الإلكتروني",
@@ -147,6 +170,22 @@
     "passwordPlaceholder": "8 أحرف على الأقل",
     "noAccount": "ليس لديك حساب؟",
     "hasAccount": "لديك حساب بالفعل؟",
-    "invalidCredentials": "بيانات الدخول غير صحيحة"
+    "invalidCredentials": "بيانات الدخول غير صحيحة",
+    "forgotPasswordTitle": "نسيت كلمة المرور",
+    "forgotPasswordSubtitle": "أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين",
+    "forgotPasswordButton": "إرسال رابط إعادة التعيين",
+    "forgotPasswordSent": "إذا وُجد حساب لهذا البريد، فقد أُرسل رابط إعادة التعيين.",
+    "forgotPasswordLink": "نسيت كلمة المرور؟",
+    "resetPasswordTitle": "إعادة تعيين كلمة المرور",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "resetPasswordButton": "إعادة التعيين",
+    "resetPasswordLoading": "جارٍ التحميل...",
+    "backToLogin": "العودة لتسجيل الدخول",
+    "invalidResetToken": "رابط إعادة التعيين غير صالح أو منتهي الصلاحية",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين",
+    "passwordTooShort": "كلمة المرور يجب أن تكون 8 أحرف على الأقل",
+    "resetFailed": "تعذّر إعادة تعيين كلمة المرور",
+    "resetSuccess": "تم تحديث كلمة المرور بنجاح. جارٍ التحويل لتسجيل الدخول..."
   }
 }

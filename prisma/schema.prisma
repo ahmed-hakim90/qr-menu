@@ -77,6 +77,11 @@ enum SubscriptionStatus {
   CANCELLED
 }
 
+enum ThemePurchaseStatus {
+  PENDING
+  ACTIVE
+}
+
 model Plan {
   id            String         @id @default(cuid())
   slug          String         @unique
@@ -152,8 +157,9 @@ model Restaurant {
   payments      Payment[]
   reservations  Reservation[]
   notifications Notification[]
-  settings      Settings?
-  subscription  Subscription?
+  settings       Settings?
+  subscription   Subscription?
+  themePurchases ThemePurchase[]
 }
 
 model Branch {
@@ -416,6 +422,37 @@ model PushSubscription {
   @@index([userId])
 }
 
+model MenuTheme {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  nameAr        String
+  nameEn        String
+  descriptionAr String
+  descriptionEn String
+  isPremium     Boolean  @default(false)
+  price         Float    @default(0)
+  sortOrder     Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ThemePurchase {
+  id               String              @id @default(cuid())
+  restaurantId     String
+  restaurant       Restaurant          @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  themeSlug        String
+  status           ThemePurchaseStatus @default(PENDING)
+  pricePaid        Float
+  paymentReference String?
+  paymentNotes     String?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  @@unique([restaurantId, themeSlug])
+  @@index([restaurantId])
+}
+
 model Settings {
   id             String     @id @default(cuid())
   restaurantId   String     @unique
@@ -425,6 +462,7 @@ model Settings {
   taxRate        Float      @default(15)
   language       String     @default("ar")
   theme                 String     @default("light")
+  menuTheme             String     @default("classic")
   fontFamily            String     @default("Inter")
   borderRadius          String     @default("1rem")
   notificationsEnabled  Boolean    @default(false)

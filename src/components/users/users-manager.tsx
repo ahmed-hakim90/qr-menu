@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,13 @@ type UserRow = {
   isActive: boolean;
 };
 
-export function UsersManager({ initialUsers }: { initialUsers: UserRow[] }) {
+export function UsersManager({
+  initialUsers,
+  currentUserId,
+}: {
+  initialUsers: UserRow[];
+  currentUserId: string;
+}) {
   const [users, setUsers] = useState(initialUsers);
   const [form, setForm] = useState({
     name: "",
@@ -50,11 +56,28 @@ export function UsersManager({ initialUsers }: { initialUsers: UserRow[] }) {
   };
 
   const updateUser = async (id: string, data: Partial<UserRow & { password?: string }>) => {
-    await apiRequest(`/api/users/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    });
-    await refresh();
+    try {
+      await apiRequest(`/api/users/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      });
+      await refresh();
+      toast.success("User updated");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to update user");
+    }
+  };
+
+  const deleteUser = async (id: string) => {
+    if (!confirm("Are you sure you want to permanently delete this user?")) return;
+
+    try {
+      await apiRequest(`/api/users/${id}`, { method: "DELETE" });
+      await refresh();
+      toast.success("User deleted");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to delete user");
+    }
   };
 
   return (
@@ -137,6 +160,16 @@ export function UsersManager({ initialUsers }: { initialUsers: UserRow[] }) {
                   Active
                 </label>
                 <Badge>{user.role}</Badge>
+                {user.id !== currentUserId && (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => deleteUser(user.id)}
+                    title="Delete user"
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>

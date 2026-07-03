@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-labelledby="title desc">
+  <title id="title">Antika Beirut logo</title>
+  <desc id="desc">A warm cream and brown typographic logo for Antika Beirut.</desc>
+  <rect width="640" height="360" fill="#f5eee3"/>
+  <g fill="none" stroke="#d7c7b2" stroke-width="6" opacity=".55">
+    <path d="M320 56c34 30 58 58 58 90 0 34-26 62-58 62s-58-28-58-62c0-32 24-60 58-90z"/>
+    <path d="M238 91c-56 10-94 42-101 97 55 7 105-16 126-66"/>
+    <path d="M402 91c56 10 94 42 101 97-55 7-105-16-126-66"/>
+  </g>
+  <circle cx="320" cy="104" r="24" fill="#2a160f"/>
+  <g fill="#2a160f">
+    <circle cx="320" cy="60" r="7"/>
+    <circle cx="352" cy="76" r="7"/>
+    <circle cx="365" cy="109" r="7"/>
+    <circle cx="346" cy="141" r="7"/>
+    <circle cx="320" cy="153" r="7"/>
+    <circle cx="294" cy="141" r="7"/>
+    <circle cx="275" cy="109" r="7"/>
+    <circle cx="288" cy="76" r="7"/>
+  </g>
+  <text x="320" y="210" text-anchor="middle" direction="rtl" unicode-bidi="bidi-override"
+    font-family="Arial, Tahoma, sans-serif" font-size="72" font-weight="700" fill="#2a160f">أنتيكا</text>
+  <text x="320" y="260" text-anchor="middle" direction="rtl" unicode-bidi="bidi-override"
+    font-family="Arial, Tahoma, sans-serif" font-size="34" letter-spacing="7" fill="#2a160f">بيروت</text>
+  <text x="320" y="314" text-anchor="middle" font-family="Georgia, serif" font-size="26" letter-spacing="8" fill="#b67b31">MENU</text>
+</svg>

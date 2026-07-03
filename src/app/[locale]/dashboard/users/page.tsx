@@ -20,7 +20,7 @@ export default async function UsersPage() {
           Manage staff roles: Owner, Manager, Captain, Cashier, Viewer.
         </p>
       </div>
-      <UsersManager initialUsers={users} />
+      <UsersManager initialUsers={users} currentUserId={session.id} />
     </div>
   );
 }

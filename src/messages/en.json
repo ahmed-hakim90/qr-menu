@@ -132,6 +132,29 @@
     "selectBranch": "Select branch",
     "openMenu": "Open menu"
   },
+  "appearance": {
+    "title": "Menu Appearance",
+    "subtitle": "Choose your digital menu design. Premium themes require a one-time purchase.",
+    "premium": "Premium",
+    "active": "Active",
+    "oneTime": "one-time",
+    "pendingPayment": "Pending payment confirmation",
+    "applyTheme": "Apply Theme",
+    "applying": "Applying...",
+    "currentTheme": "Current Theme",
+    "purchaseToUnlock": "Purchase this theme to unlock",
+    "paymentReference": "Payment Reference",
+    "paymentReferencePlaceholder": "Transfer number or reference",
+    "paymentNotes": "Notes (optional)",
+    "paymentNotesPlaceholder": "Any additional payment details",
+    "purchase": "Purchase Theme",
+    "submitting": "Submitting...",
+    "themeApplied": "Theme applied successfully",
+    "selectFailed": "Failed to apply theme",
+    "purchaseSubmitted": "Purchase submitted — will activate after payment confirmation",
+    "purchaseFailed": "Failed to submit purchase",
+    "paymentRequired": "Payment reference is required"
+  },
   "auth": {
     "loginTitle": "Login",
     "email": "Email",
@@ -147,6 +170,22 @@
     "passwordPlaceholder": "At least 8 characters",
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
-    "invalidCredentials": "Invalid credentials"
+    "invalidCredentials": "Invalid credentials",
+    "forgotPasswordTitle": "Forgot password",
+    "forgotPasswordSubtitle": "Enter your email and we'll send you a reset link",
+    "forgotPasswordButton": "Send reset link",
+    "forgotPasswordSent": "If an account exists for that email, a reset link has been sent.",
+    "forgotPasswordLink": "Forgot password?",
+    "resetPasswordTitle": "Reset password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "resetPasswordButton": "Reset password",
+    "resetPasswordLoading": "Loading...",
+    "backToLogin": "Back to login",
+    "invalidResetToken": "Invalid or expired reset link",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 8 characters",
+    "resetFailed": "Could not reset password",
+    "resetSuccess": "Password updated successfully. Redirecting to login..."
   }
 }

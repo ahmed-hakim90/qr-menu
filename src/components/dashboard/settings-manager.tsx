@@ -114,7 +114,7 @@ export function SettingsManager({ settings }: SettingsManagerProps) {
             </div>
 
             <div className="space-y-2">
-              <Label>Menu Theme</Label>
+              <Label>Dashboard Theme</Label>
               <Select
                 value={form.theme}
                 onChange={(e) =>
@@ -128,6 +128,9 @@ export function SettingsManager({ settings }: SettingsManagerProps) {
                 <option value="dark">Dark</option>
                 <option value="system">System</option>
               </Select>
+              <p className="text-xs text-muted-foreground">
+                Theme for the admin dashboard only. Menu appearance is configured in Appearance.
+              </p>
             </div>
           </CardContent>
         </Card>

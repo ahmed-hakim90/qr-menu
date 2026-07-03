@@ -48,6 +48,40 @@ export async function createUser(input: {
   });
 }
 
+export async function deleteUser(
+  userId: string,
+  restaurantId: string,
+  actorUserId: string
+) {
+  if (userId === actorUserId) {
+    throw new Error("Cannot delete your own account");
+  }
+
+  const user = await db.user.findFirst({
+    where: { id: userId, restaurantId },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if (user.role === "OWNER") {
+    const ownerCount = await db.user.count({
+      where: { restaurantId, role: "OWNER" },
+    });
+    if (ownerCount <= 1) {
+      throw new Error("Cannot delete the last owner");
+    }
+  }
+
+  await db.$transaction([
+    db.passwordResetToken.deleteMany({ where: { userId } }),
+    db.user.delete({ where: { id: userId } }),
+  ]);
+
+  return { success: true };
+}
+
 export async function updateUser(
   userId: string,
   restaurantId: string,

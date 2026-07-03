@@ -11,77 +11,98 @@ type ProductWithCategory = Product & { category: Category };
 
 interface MenuSearchProps {
   products: ProductWithCategory[];
+  categories: Category[];
   locale: string;
   labels: {
     search: string;
-    noResults: string;
-    bestSeller: string;
-    offers: string;
-    new: string;
-    hot: string;
-    cold: string;
-    vegetarian: string;
-    vegan: string;
-    spicy: string;
+    allItems: string;
   };
-  onFilter: (filtered: ProductWithCategory[]) => void;
+  categoryButtonClass?: {
+    active: string;
+    inactive: string;
+  };
+  stickyTopClass?: string;
+  onFilterChange: (state: {
+    query: string;
+    categoryId: string | null;
+    filteredProducts: ProductWithCategory[];
+    isSearchActive: boolean;
+  }) => void;
+  onCategorySelect?: (categoryId: string | null) => void;
 }
 
-type FilterKey = "isBestSeller" | "isOffer" | "isNew" | "isHot" | "isCold" | "isVegetarian" | "isVegan" | "isSpicy";
+const normalizeSearchText = (value: string) =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/[\u064B-\u065F\u0670]/g, "")
+    .replace(/\u0640/g, "")
+    .replace(/[\u0623\u0625\u0622\u0671]/g, "\u0627")
+    .replace(/\u0629/g, "\u0647")
+    .replace(/\u0649/g, "\u064A")
+    .replace(/\u0624/g, "\u0648")
+    .replace(/\u0626/g, "\u064A");
 
-const FILTERS: { key: FilterKey; labelKey: keyof MenuSearchProps["labels"] }[] = [
-  { key: "isBestSeller", labelKey: "bestSeller" },
-  { key: "isOffer", labelKey: "offers" },
-  { key: "isNew", labelKey: "new" },
-  { key: "isHot", labelKey: "hot" },
-  { key: "isCold", labelKey: "cold" },
-  { key: "isVegetarian", labelKey: "vegetarian" },
-  { key: "isVegan", labelKey: "vegan" },
-  { key: "isSpicy", labelKey: "spicy" },
-];
-
-export function MenuSearch({ products, locale, labels, onFilter }: MenuSearchProps) {
+export function MenuSearch({
+  products,
+  categories,
+  locale,
+  labels,
+  categoryButtonClass,
+  stickyTopClass = "top-0",
+  onFilterChange,
+  onCategorySelect,
+}: MenuSearchProps) {
   const [query, setQuery] = useState("");
-  const [activeFilters, setActiveFilters] = useState<FilterKey[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+
+  const isSearchActive = query.trim().length > 0;
 
   const filtered = useMemo(() => {
     let result = products;
 
-    if (query.trim()) {
-      const q = query.toLowerCase();
+    if (isSearchActive) {
+      const q = normalizeSearchText(query);
       result = result.filter((p) => {
-        const name = locale === "ar" ? p.nameAr : p.nameEn;
-        const desc = locale === "ar" ? p.descriptionAr : p.descriptionEn;
-        const cat = locale === "ar" ? p.category.nameAr : p.category.nameEn;
-        return (
-          name.toLowerCase().includes(q) ||
-          desc?.toLowerCase().includes(q) ||
-          cat.toLowerCase().includes(q)
-        );
+        const haystack = [
+          p.nameAr,
+          p.nameEn,
+          p.descriptionAr,
+          p.descriptionEn,
+          p.category.nameAr,
+          p.category.nameEn,
+        ];
+        return haystack.some((field) => field && normalizeSearchText(field).includes(q));
       });
     }
 
-    if (activeFilters.length > 0) {
-      result = result.filter((p) =>
-        activeFilters.every((f) => p[f] === true)
-      );
+    if (selectedCategoryId) {
+      result = result.filter((p) => p.categoryId === selectedCategoryId);
     }
 
     return result;
-  }, [products, query, activeFilters, locale]);
+  }, [products, query, selectedCategoryId, isSearchActive]);
 
   useEffect(() => {
-    onFilter(filtered);
-  }, [filtered, onFilter]);
+    onFilterChange({
+      query,
+      categoryId: selectedCategoryId,
+      filteredProducts: filtered,
+      isSearchActive,
+    });
+  }, [filtered, query, selectedCategoryId, isSearchActive, onFilterChange]);
 
-  const toggleFilter = (key: FilterKey) => {
-    setActiveFilters((prev) =>
-      prev.includes(key) ? prev.filter((f) => f !== key) : [...prev, key]
-    );
+  const handleCategoryClick = (categoryId: string | null) => {
+    setSelectedCategoryId(categoryId);
+    onCategorySelect?.(categoryId);
   };
 
+  const activeClass = categoryButtonClass?.active ?? "bg-primary text-primary-foreground shadow-md";
+  const inactiveClass =
+    categoryButtonClass?.inactive ?? "bg-muted text-muted-foreground hover:bg-muted/80";
+
   return (
-    <div className="space-y-4 sticky top-0 z-30 bg-background/80 backdrop-blur-xl py-4 -mx-4 px-4 border-b border-border/50">
+    <div className={cn("space-y-4 sticky z-30 bg-background/80 backdrop-blur-xl py-4 -mx-4 px-4 border-b border-border/50", stickyTopClass)}>
       <div className="relative">
         <Search className="absolute start-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
@@ -100,15 +121,29 @@ export function MenuSearch({ products, locale, labels, onFilter }: MenuSearchPro
         )}
       </div>
       <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-        {FILTERS.map(({ key, labelKey }) => (
+        <Button
+          variant={selectedCategoryId === null ? "default" : "outline"}
+          size="sm"
+          onClick={() => handleCategoryClick(null)}
+          className={cn(
+            "shrink-0 rounded-full",
+            selectedCategoryId === null ? activeClass : inactiveClass
+          )}
+        >
+          {labels.allItems}
+        </Button>
+        {categories.map((category) => (
           <Button
-            key={key}
-            variant={activeFilters.includes(key) ? "default" : "outline"}
+            key={category.id}
+            variant={selectedCategoryId === category.id ? "default" : "outline"}
             size="sm"
-            onClick={() => toggleFilter(key)}
-            className={cn("shrink-0 rounded-full", activeFilters.includes(key) && "shadow-md")}
+            onClick={() => handleCategoryClick(category.id)}
+            className={cn(
+              "shrink-0 rounded-full",
+              selectedCategoryId === category.id ? activeClass : inactiveClass
+            )}
           >
-            {labels[labelKey]}
+            {locale === "ar" ? category.nameAr : category.nameEn}
           </Button>
         ))}
       </div>

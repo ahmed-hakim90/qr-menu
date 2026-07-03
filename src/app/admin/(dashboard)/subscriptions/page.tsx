@@ -20,5 +20,11 @@ export default async function AdminSubscriptionsPage() {
     }),
   ]);
 
+  subscriptions.sort((a, b) => {
+    if (a.status === "PENDING" && b.status !== "PENDING") return -1;
+    if (b.status === "PENDING" && a.status !== "PENDING") return 1;
+    return b.updatedAt.getTime() - a.updatedAt.getTime();
+  });
+
   return <SubscriptionsManager subscriptions={subscriptions} plans={plans} />;
 }

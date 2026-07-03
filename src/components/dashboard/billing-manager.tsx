@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, CreditCard } from "lucide-react";
@@ -63,6 +64,11 @@ export function BillingManager({ subscription, plans, usage }: BillingManagerPro
   const currentPlan = subscription?.plan || plans[0];
 
   const handleSubscribe = async () => {
+    if (selectedPlan !== "free" && !paymentReference.trim()) {
+      toast.error("Enter your payment reference before submitting");
+      return;
+    }
+
     setSaving(true);
     try {
       await apiRequest("/api/billing", {

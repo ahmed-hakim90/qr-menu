@@ -1,15 +1,17 @@
 import { getSession } from "@/lib/auth";
-
-function PlaceholderPage({ title }: { title: string }) {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">{title}</h1>
-      <p className="text-muted-foreground">Coming soon in the next phase.</p>
-    </div>
-  );
-}
+import { getRestaurantThemeState } from "@/features/themes/services/theme-service";
+import { AppearanceManager } from "@/components/dashboard/appearance-manager";
 
 export default async function AppearancePage() {
-  await getSession();
-  return <PlaceholderPage title="Appearance" />;
+  const session = await getSession();
+  if (!session) return null;
+
+  const state = await getRestaurantThemeState(session.restaurantId);
+
+  return (
+    <AppearanceManager
+      activeMenuTheme={state.activeMenuTheme}
+      themes={state.themes}
+    />
+  );
 }
