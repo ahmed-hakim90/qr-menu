@@ -111,7 +111,12 @@
     "todaySales": "Today's Sales",
     "openOrders": "Open Orders",
     "activeTables": "Active Tables",
-    "reservationsToday": "Reservations Today"
+    "reservationsToday": "Reservations Today",
+    "menuLink": "Menu Link",
+    "menuLinkHint": "Share this link with your customers",
+    "menuLinkEmpty": "Add a branch to get your shareable menu link.",
+    "selectBranch": "Select branch",
+    "openMenu": "Open menu"
   },
   "auth": {
     "loginTitle": "Login",

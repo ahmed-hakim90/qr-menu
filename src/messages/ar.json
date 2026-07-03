@@ -111,7 +111,12 @@
     "todaySales": "مبيعات اليوم",
     "openOrders": "الطلبات المفتوحة",
     "activeTables": "الترابيزات النشطة",
-    "reservationsToday": "حجوزات اليوم"
+    "reservationsToday": "حجوزات اليوم",
+    "menuLink": "رابط القائمة",
+    "menuLinkHint": "شارك هذا الرابط مع عملائك",
+    "menuLinkEmpty": "أضف فرعاً للحصول على رابط القائمة.",
+    "selectBranch": "اختر الفرع",
+    "openMenu": "افتح القائمة"
   },
   "auth": {
     "loginTitle": "تسجيل الدخول",
