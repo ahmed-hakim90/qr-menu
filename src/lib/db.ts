@@ -6,7 +6,13 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-const REQUIRED_DELEGATES = ["branch", "subscription", "order", "user"] as const;
+const REQUIRED_DELEGATES = [
+  "branch",
+  "subscription",
+  "order",
+  "user",
+  "menuTheme",
+] as const;
 
 function resolveDatabaseUrl() {
   // Session pooler (5432) is more reliable for Prisma's pg adapter in dev.
