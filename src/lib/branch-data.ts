@@ -17,6 +17,8 @@ type BranchPayload = {
   instagram?: string;
   facebook?: string;
   googleMaps?: string;
+  googleReviewUrl?: string;
+  reservationPhone?: string;
   hoursAr?: string;
   hoursEn?: string;
   workingHours?: unknown;
@@ -45,6 +47,8 @@ export function normalizeBranchData(data: BranchPayload): Prisma.BranchUpdateInp
   if (data.instagram !== undefined) update.instagram = data.instagram || null;
   if (data.facebook !== undefined) update.facebook = data.facebook || null;
   if (data.googleMaps !== undefined) update.googleMaps = data.googleMaps || null;
+  if (data.googleReviewUrl !== undefined) update.googleReviewUrl = data.googleReviewUrl || null;
+  if (data.reservationPhone !== undefined) update.reservationPhone = data.reservationPhone || null;
   if (data.primaryColor !== undefined) update.primaryColor = data.primaryColor;
   if (data.secondaryColor !== undefined) update.secondaryColor = data.secondaryColor;
   if (data.isActive !== undefined) update.isActive = data.isActive;

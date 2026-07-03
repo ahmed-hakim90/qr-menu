@@ -64,6 +64,8 @@ export async function POST(request: NextRequest) {
         instagram: parsed.data.instagram,
         facebook: parsed.data.facebook,
         googleMaps: parsed.data.googleMaps,
+        googleReviewUrl: parsed.data.googleReviewUrl || null,
+        reservationPhone: parsed.data.reservationPhone || null,
         hoursAr: normalized.hoursAr as string | undefined,
         hoursEn: normalized.hoursEn as string | undefined,
         workingHours: normalized.workingHours,

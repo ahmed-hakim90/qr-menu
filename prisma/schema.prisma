@@ -171,6 +171,8 @@ model Branch {
   instagram       String?
   facebook        String?
   googleMaps      String?
+  googleReviewUrl String?
+  reservationPhone String?
   hoursAr         String?
   hoursEn         String?
   workingHours    Json?

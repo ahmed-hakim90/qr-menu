@@ -8,6 +8,7 @@ import {
   MapPin,
   Globe,
   Clock,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,9 @@ interface MenuHeaderProps {
   labels: {
     hours: string;
     contact: string;
+    maps: string;
+    review: string;
+    reservationPhone: string;
   };
 }
 
@@ -115,7 +119,23 @@ export function MenuHeader({ branch, locale, labels }: MenuHeaderProps) {
             <Button variant="outline" size="sm" asChild>
               <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
                 <MapPin className="h-4 w-4" />
-                Maps
+                {labels.maps}
+              </a>
+            </Button>
+          )}
+          {branch.googleReviewUrl && (
+            <Button variant="outline" size="sm" asChild>
+              <a href={branch.googleReviewUrl} target="_blank" rel="noopener noreferrer">
+                <Star className="h-4 w-4" />
+                {labels.review}
+              </a>
+            </Button>
+          )}
+          {branch.reservationPhone && (
+            <Button variant="outline" size="sm" asChild>
+              <a href={`tel:${branch.reservationPhone}`}>
+                <Phone className="h-4 w-4" />
+                {labels.reservationPhone}
               </a>
             </Button>
           )}

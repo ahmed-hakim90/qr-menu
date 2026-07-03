@@ -60,7 +60,21 @@
     "sizes": "Sizes",
     "addons": "Add-ons",
     "notes": "Notes",
-    "relatedProducts": "Related Items"
+    "relatedProducts": "Related Items",
+    "maps": "Location",
+    "review": "Review",
+    "reservationPhone": "Call to reserve",
+    "bookTable": "Book a table",
+    "reservationTitle": "Reservation request",
+    "reservationName": "Name",
+    "reservationCustomerPhone": "Phone number",
+    "reservationPartySize": "Party size",
+    "reservationDateTime": "Date & time",
+    "reservationNotes": "Notes (optional)",
+    "reservationSubmit": "Submit reservation",
+    "reservationSubmitting": "Submitting...",
+    "reservationSuccess": "Reservation request sent. We will contact you soon.",
+    "callToReserve": "Call to reserve"
   },
   "filters": {
     "bestSeller": "Best Seller",

@@ -60,7 +60,21 @@
     "sizes": "الأحجام",
     "addons": "الإضافات",
     "notes": "ملاحظات",
-    "relatedProducts": "أصناف مشابهة"
+    "relatedProducts": "أصناف مشابهة",
+    "maps": "الموقع",
+    "review": "تقييم",
+    "reservationPhone": "حجز بالتليفون",
+    "bookTable": "احجز طاولة",
+    "reservationTitle": "طلب حجز",
+    "reservationName": "الاسم",
+    "reservationCustomerPhone": "رقم الموبايل",
+    "reservationPartySize": "عدد الأشخاص",
+    "reservationDateTime": "التاريخ والوقت",
+    "reservationNotes": "ملاحظات (اختياري)",
+    "reservationSubmit": "إرسال طلب الحجز",
+    "reservationSubmitting": "جاري الإرسال...",
+    "reservationSuccess": "تم إرسال طلب الحجز، هنتواصل معاك قريباً",
+    "callToReserve": "اتصل للحجز"
   },
   "filters": {
     "bestSeller": "الأكثر مبيعاً",

@@ -97,18 +97,18 @@ export function ProductCard({
               <ProductBadges product={product} labels={labels} />
             </div>
           </div>
-          <div className="p-4">
-            <h3 className="font-semibold text-lg leading-tight mb-1 group-hover:text-primary transition-colors">
+          <div className="p-3 sm:p-4">
+            <h3 className="font-semibold text-base sm:text-lg leading-tight mb-1 group-hover:text-primary transition-colors">
               {name}
             </h3>
             {description && (
-              <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mb-3">
                 {description}
               </p>
             )}
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-bold text-primary">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <span className="text-base sm:text-lg font-bold text-primary">
                   {formatPrice(product.price, labels.currency)}
                 </span>
                 {hasDiscount && (

@@ -6,6 +6,7 @@ import { MenuHeader } from "./menu-header";
 import { MenuSearch } from "./menu-search";
 import { ProductCard } from "./product-card";
 import { MenuCartBar } from "./menu-cart-bar";
+import { MenuReservation } from "./menu-reservation";
 import { useMenuCart } from "@/hooks/use-menu-cart";
 import { useTableSession } from "@/hooks/use-table-session";
 import { useFavorites } from "@/hooks/use-favorites";
@@ -61,10 +62,13 @@ export function MenuView({ branch, categories, allProducts, currencySymbol, tabl
         labels={{
           hours: t("menu.hours"),
           contact: t("menu.contact"),
+          maps: t("menu.maps"),
+          review: t("menu.review"),
+          reservationPhone: t("menu.reservationPhone"),
         }}
       />
 
-      <div className="max-w-4xl mx-auto px-4 pb-20">
+      <div className={cn("max-w-4xl mx-auto px-4", tableNumber ? "pb-20" : "pb-28")}>
         <MenuSearch
           products={allProducts}
           locale={locale}
@@ -88,7 +92,7 @@ export function MenuView({ branch, categories, allProducts, currencySymbol, tabl
             {filteredProducts!.length === 0 ? (
               <p className="text-center text-muted-foreground py-12">{t("common.noResults")}</p>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 {filteredProducts!.map((product) => (
                   <ProductCard
                     key={product.id}
@@ -152,7 +156,7 @@ export function MenuView({ branch, categories, allProducts, currencySymbol, tabl
                   <h2 className="text-xl font-bold mb-4 sticky top-[180px] z-10 bg-background/80 backdrop-blur-xl py-2">
                     {locale === "ar" ? category.nameAr : category.nameEn}
                   </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     {category.products
                       .filter((p) => p.isAvailable)
                       .map((product) => (
@@ -197,6 +201,27 @@ export function MenuView({ branch, categories, allProducts, currencySymbol, tabl
         onRequestBill={requestBill}
         onCallWaiter={callWaiter}
       />
+
+      {!tableNumber && (
+        <MenuReservation
+          branchSlug={branch.slug}
+          locale={locale}
+          reservationPhone={branch.reservationPhone}
+          labels={{
+            book: t("menu.bookTable"),
+            title: t("menu.reservationTitle"),
+            name: t("menu.reservationName"),
+            phone: t("menu.reservationCustomerPhone"),
+            partySize: t("menu.reservationPartySize"),
+            dateTime: t("menu.reservationDateTime"),
+            notes: t("menu.reservationNotes"),
+            submit: t("menu.reservationSubmit"),
+            submitting: t("menu.reservationSubmitting"),
+            success: t("menu.reservationSuccess"),
+            callToReserve: t("menu.callToReserve"),
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -60,6 +60,8 @@ export const branchSchema = z.object({
   instagram: z.string().optional(),
   facebook: z.string().optional(),
   googleMaps: z.string().optional(),
+  googleReviewUrl: z.string().url().optional().or(z.literal("")),
+  reservationPhone: z.string().optional(),
   hoursAr: z.string().optional(),
   hoursEn: z.string().optional(),
   workingHours: workingHoursSchema.optional().nullable(),

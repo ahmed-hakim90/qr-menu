@@ -52,6 +52,8 @@ const emptyForm = {
   addressEn: "",
   phone: "",
   whatsapp: "",
+  reservationPhone: "",
+  googleReviewUrl: "",
   instagram: "",
   facebook: "",
   logo: "",
@@ -98,6 +100,8 @@ export function BranchesManager({ branches, branchLimit }: BranchesManagerProps)
       addressEn: branch.addressEn || "",
       phone: fromSocialUrl("phone", branch.phone),
       whatsapp: fromSocialUrl("whatsapp", branch.whatsapp),
+      reservationPhone: fromSocialUrl("phone", branch.reservationPhone),
+      googleReviewUrl: branch.googleReviewUrl || "",
       instagram: fromSocialUrl("instagram", branch.instagram),
       facebook: fromSocialUrl("facebook", branch.facebook),
       logo: branch.logo || "",
@@ -120,6 +124,8 @@ export function BranchesManager({ branches, branchLimit }: BranchesManagerProps)
         ...form,
         phone: toSocialUrl("phone", form.phone),
         whatsapp: toSocialUrl("whatsapp", form.whatsapp),
+        reservationPhone: toSocialUrl("phone", form.reservationPhone),
+        googleReviewUrl: form.googleReviewUrl.trim() || undefined,
         instagram: toSocialUrl("instagram", form.instagram),
         facebook: toSocialUrl("facebook", form.facebook),
         workingHours: normalizeWorkingHours(workingHours),
@@ -221,6 +227,24 @@ export function BranchesManager({ branches, branchLimit }: BranchesManagerProps)
                   value={form.whatsapp}
                   onChange={(value) => set("whatsapp", value)}
                 />
+                <SocialInput
+                  platform="phone"
+                  label="Reservation Phone"
+                  value={form.reservationPhone}
+                  onChange={(value) => set("reservationPhone", value)}
+                />
+                <div className="space-y-2 sm:col-span-2">
+                  <Label>Google Maps Review Link</Label>
+                  <Input
+                    type="url"
+                    value={form.googleReviewUrl}
+                    onChange={(e) => set("googleReviewUrl", e.target.value)}
+                    placeholder="https://g.page/r/..."
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Paste your Google review link so customers can leave a rating from the public menu.
+                  </p>
+                </div>
                 <SocialInput
                   platform="instagram"
                   value={form.instagram}

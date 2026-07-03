@@ -83,14 +83,15 @@ interface SocialInputProps {
   platform: SocialPlatform;
   value: string;
   onChange: (value: string) => void;
+  label?: string;
 }
 
-export function SocialInput({ platform, value, onChange }: SocialInputProps) {
+export function SocialInput({ platform, value, onChange, label }: SocialInputProps) {
   const config = CONFIG[platform];
 
   return (
     <div className="space-y-2">
-      <Label>{config.label}</Label>
+      <Label>{label ?? config.label}</Label>
       <div className="flex rounded-2xl border border-border bg-background/50 overflow-hidden focus-within:ring-2 focus-within:ring-ring">
         {config.prefix && (
           <span className="px-3 py-2 text-sm text-muted-foreground border-e border-border/50 bg-muted/30 shrink-0 self-center">

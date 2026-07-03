@@ -24,7 +24,10 @@ export async function createReservation(input: {
   partySize: number;
   startsAt: Date;
   notes?: string;
+  status?: ReservationStatus;
 }) {
+  const status = input.status ?? "CONFIRMED";
+
   const reservation = await db.$transaction(async (tx) => {
     const created = await tx.reservation.create({
       data: {
@@ -36,7 +39,7 @@ export async function createReservation(input: {
         partySize: input.partySize,
         startsAt: input.startsAt,
         notes: input.notes,
-        status: "CONFIRMED",
+        status,
       },
       include: { table: true, branch: true },
     });
@@ -133,5 +136,6 @@ export async function createPublicReservation(input: {
     partySize: input.partySize,
     startsAt: input.startsAt,
     notes: input.notes,
+    status: "PENDING",
   });
 }
