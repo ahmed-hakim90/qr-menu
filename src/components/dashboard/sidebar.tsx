@@ -50,28 +50,35 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
+  // Overview & insights
   { href: "/dashboard", icon: LayoutDashboard, key: "overview", minRole: "VIEWER" },
   { href: "/dashboard/analytics", icon: BarChart3, key: "analytics", minRole: "MANAGER" },
+  // Daily operations
   { href: "/dashboard/orders", icon: ClipboardList, key: "orders", minRole: "CAPTAIN" },
   { href: "/dashboard/captain", icon: Compass, key: "captain", minRole: "CAPTAIN" },
   { href: "/dashboard/cashier", icon: Wallet, key: "cashier", minRole: "CASHIER" },
-  { href: "/dashboard/branches", icon: Building2, key: "branches", minRole: "VIEWER" },
+  // Tables & reservations
   { href: "/dashboard/tables", icon: UtensilsCrossed, key: "tables", minRole: "MANAGER", feature: "tables" },
   { href: "/dashboard/floor", icon: Grid3x3, key: "floor", minRole: "MANAGER", feature: "tables" },
   { href: "/dashboard/reservations", icon: CalendarDays, key: "reservations", minRole: "MANAGER", feature: "tables" },
+  // Menu content
   { href: "/dashboard/categories", icon: FolderOpen, key: "categories", minRole: "VIEWER" },
   { href: "/dashboard/products", icon: Package, key: "products", minRole: "VIEWER" },
   { href: "/dashboard/offers", icon: Tag, key: "offers", minRole: "VIEWER" },
   { href: "/dashboard/addons", icon: Plus, key: "addons", minRole: "VIEWER" },
   { href: "/dashboard/sizes", icon: Ruler, key: "sizes", minRole: "VIEWER" },
+  // Media
   { href: "/dashboard/gallery", icon: Image, key: "gallery", minRole: "VIEWER" },
   { href: "/dashboard/media", icon: Film, key: "media", minRole: "VIEWER" },
+  // Customer-facing
   { href: "/dashboard/qr-codes", icon: QrCode, key: "qrCodes", minRole: "VIEWER" },
-  { href: "/dashboard/domain", icon: Globe, key: "domain", minRole: "MANAGER" },
-  { href: "/dashboard/billing", icon: CreditCard, key: "billing", minRole: "MANAGER" },
   { href: "/dashboard/appearance", icon: Palette, key: "appearance", minRole: "MANAGER" },
-  { href: "/dashboard/settings", icon: Settings, key: "settings", minRole: "MANAGER" },
+  { href: "/dashboard/domain", icon: Globe, key: "domain", minRole: "MANAGER" },
+  // Administration
+  { href: "/dashboard/branches", icon: Building2, key: "branches", minRole: "VIEWER" },
   { href: "/dashboard/users", icon: Users, key: "users", minRole: "MANAGER" },
+  { href: "/dashboard/billing", icon: CreditCard, key: "billing", minRole: "MANAGER" },
+  { href: "/dashboard/settings", icon: Settings, key: "settings", minRole: "MANAGER" },
 ];
 
 interface DashboardSidebarProps {
