@@ -19,11 +19,10 @@ type BranchOption = {
 
 interface ShareMenuLinkProps {
   branches: BranchOption[];
-  subdomain?: string | null;
   customDomain?: string | null;
 }
 
-export function ShareMenuLink({ branches, subdomain, customDomain }: ShareMenuLinkProps) {
+export function ShareMenuLink({ branches, customDomain }: ShareMenuLinkProps) {
   const t = useTranslations("dashboard");
   const tCommon = useTranslations("common");
   const locale = useLocale();
@@ -34,11 +33,10 @@ export function ShareMenuLink({ branches, subdomain, customDomain }: ShareMenuLi
     const origin = typeof window !== "undefined" ? window.location.origin : undefined;
     return buildMenuUrl({
       branchSlug: selectedSlug,
-      subdomain,
       customDomain,
       origin,
     });
-  }, [selectedSlug, subdomain, customDomain]);
+  }, [selectedSlug, customDomain]);
 
   const branchLabel = (branch: BranchOption) =>
     locale === "ar" ? branch.nameAr || branch.nameEn : branch.nameEn;

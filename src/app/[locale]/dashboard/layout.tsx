@@ -22,7 +22,7 @@ export default async function DashboardLayout({
     }),
     db.restaurant.findUnique({
       where: { id: session.restaurantId },
-      select: { subdomain: true, customDomain: true, slug: true },
+      select: { customDomain: true },
     }),
   ]);
   const limits = getEffectiveLimits(subscription);
@@ -38,7 +38,6 @@ export default async function DashboardLayout({
         <div className="p-6 pt-16 lg:pt-6">
           <ShareMenuLink
             branches={branches}
-            subdomain={restaurant?.subdomain || restaurant?.slug}
             customDomain={restaurant?.customDomain}
           />
           {children}

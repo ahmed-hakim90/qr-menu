@@ -5,7 +5,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 
-export function LocaleSwitcher() {
+interface LocaleSwitcherProps {
+  showLabel?: boolean;
+}
+
+export function LocaleSwitcher({ showLabel = true }: LocaleSwitcherProps) {
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
@@ -24,9 +28,15 @@ export function LocaleSwitcher() {
   };
 
   return (
-    <Button variant="ghost" size="sm" onClick={switchLocale} className="gap-1.5">
+    <Button
+      variant="ghost"
+      size={showLabel ? "sm" : "icon"}
+      onClick={switchLocale}
+      className={showLabel ? "gap-1.5" : undefined}
+      aria-label={locale === "ar" ? "Switch to English" : "التبديل للعربية"}
+    >
       <Globe className="h-4 w-4" />
-      {locale === "ar" ? "EN" : "عربي"}
+      {showLabel && (locale === "ar" ? "EN" : "عربي")}
     </Button>
   );
 }
