@@ -23,7 +23,9 @@
     "logout": "تسجيل الخروج",
     "dashboard": "لوحة التحكم",
     "getStarted": "ابدأ الآن",
-    "learnMore": "اعرف المزيد"
+    "learnMore": "اعرف المزيد",
+    "showPassword": "إظهار كلمة المرور",
+    "hidePassword": "إخفاء كلمة المرور"
   },
   "landing": {
     "badge": "حلول رقمية للمطاعم والضيافة",

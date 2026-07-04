@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -108,14 +109,15 @@ export default function RegisterPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">{t("password")}</Label>
-              <Input
+              <PasswordInput
                 id="password"
-                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={8}
                 placeholder={t("passwordPlaceholder")}
+                showPasswordLabel={tCommon("showPassword")}
+                hidePasswordLabel={tCommon("hidePassword")}
               />
             </div>
 

@@ -7,7 +7,7 @@ import Link from "next/link";
 import { QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LocaleSwitcher } from "@/components/locale-switcher";
@@ -130,28 +130,30 @@ function ResetPasswordForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="password">{t("newPassword")}</Label>
-            <Input
+            <PasswordInput
               id="password"
-              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={8}
               placeholder={t("passwordPlaceholder")}
               autoComplete="new-password"
+              showPasswordLabel={tCommon("showPassword")}
+              hidePasswordLabel={tCommon("hidePassword")}
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
-            <Input
+            <PasswordInput
               id="confirmPassword"
-              type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               minLength={8}
               placeholder={t("passwordPlaceholder")}
               autoComplete="new-password"
+              showPasswordLabel={tCommon("showPassword")}
+              hidePasswordLabel={tCommon("hidePassword")}
             />
           </div>
           {error && <p className="text-sm text-destructive text-center">{error}</p>}

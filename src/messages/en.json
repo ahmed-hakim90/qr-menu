@@ -23,7 +23,9 @@
     "logout": "Logout",
     "dashboard": "Dashboard",
     "getStarted": "Get Started",
-    "learnMore": "Learn More"
+    "learnMore": "Learn More",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "landing": {
     "badge": "Digital solutions for restaurants & hospitality",
