@@ -20,15 +20,15 @@ const cairo = Cairo({
 
 export const metadata: Metadata = {
   title: {
-    default: "QR Menu - Professional Digital Menu Platform",
-    template: "%s | QR Menu",
+    default: "Smart Menu - Professional Digital Menu Platform",
+    template: "%s | Smart Menu",
   },
   description: "Transform your restaurant menu into an elegant digital experience with QR codes.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "QR Menu",
+    title: "Smart Menu",
   },
 };
 

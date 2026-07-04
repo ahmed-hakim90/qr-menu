@@ -118,14 +118,59 @@ model Subscription {
   @@index([planId])
 }
 
+enum CardStatus {
+  AVAILABLE
+  ASSIGNED
+  INACTIVE
+  LOST
+  BROKEN
+  DISABLED
+  ARCHIVED
+}
+
+enum CardType {
+  QR_ONLY
+  NFC_ONLY
+  QR_AND_NFC
+  TABLE_STAND
+  TABLE_STICKER
+  ACRYLIC_STAND
+  TENT_CARD
+}
+
+enum NfcWriteStatus {
+  PENDING
+  WRITTEN
+  FAILED
+  NOT_APPLICABLE
+}
+
+enum PrintQueueStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+enum PrintSheetType {
+  A4
+  LABEL_SHEET
+  STICKER_SHEET
+  PVC_CARD
+  ACRYLIC_STAND
+  TABLE_TENT
+}
+
 model PlatformAdmin {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                String           @id @default(cuid())
+  email             String           @unique
+  passwordHash      String
+  name              String
+  isActive          Boolean          @default(true)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  createdCards      PlatformCard[]   @relation("CardCreatedBy")
+  cardAssignments   CardAssignment[] @relation("AssignmentAssignedBy")
 }
 
 model Restaurant {
@@ -157,9 +202,11 @@ model Restaurant {
   payments      Payment[]
   reservations  Reservation[]
   notifications Notification[]
-  settings       Settings?
-  subscription   Subscription?
-  themePurchases ThemePurchase[]
+  settings         Settings?
+  subscription     Subscription?
+  themePurchases   ThemePurchase[]
+  cardAssignments  CardAssignment[]
+  cardScanLogs     CardScanLog[]
 }
 
 model Branch {
@@ -198,6 +245,8 @@ model Branch {
   reservations    Reservation[]
   notifications   Notification[]
   productBranches ProductBranch[]
+  cardAssignments CardAssignment[]
+  cardScanLogs    CardScanLog[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
@@ -217,10 +266,12 @@ model DiningTable {
   isActive     Boolean      @default(true)
   sortOrder    Int          @default(0)
   floorItems   FloorTable[]
-  sessions     TableSession[]
-  reservations Reservation[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  sessions        TableSession[]
+  reservations    Reservation[]
+  cardAssignments CardAssignment[]
+  cardScanLogs    CardScanLog[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   @@unique([branchId, number])
   @@index([restaurantId])
@@ -691,4 +742,124 @@ model Media {
   createdAt    DateTime   @default(now())
 
   @@index([restaurantId])
+}
+
+model PlatformCard {
+  id             String           @id @default(cuid())
+  uuid           String           @unique @default(uuid())
+  token          String           @unique
+  serialNumber   String           @unique
+  cardType       CardType         @default(QR_ONLY)
+  status         CardStatus       @default(AVAILABLE)
+  qrImage        String?
+  nfcUid         String?
+  secretKey      String
+  printCode      String?
+  nfcWriteStatus NfcWriteStatus   @default(NOT_APPLICABLE)
+  readCount      Int              @default(0)
+  scanCount      Int              @default(0)
+  lastScanAt     DateTime?
+  batchId        String?
+  batch          CardBatch?       @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  createdById    String?
+  createdBy      PlatformAdmin?   @relation("CardCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  assignments    CardAssignment[]
+  scanLogs       CardScanLog[]
+  printQueueItems PrintQueueItem[]
+
+  @@index([status])
+  @@index([cardType])
+  @@index([batchId])
+  @@index([lastScanAt])
+}
+
+model CardAssignment {
+  id           String        @id @default(cuid())
+  cardId       String
+  card         PlatformCard  @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  restaurantId String
+  restaurant   Restaurant    @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  branchId     String
+  branch       Branch        @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  tableId      String
+  table        DiningTable   @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  assignedAt   DateTime      @default(now())
+  assignedById String?
+  assignedBy   PlatformAdmin? @relation("AssignmentAssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
+  active       Boolean       @default(true)
+  unassignedAt DateTime?
+
+  @@index([cardId])
+  @@index([restaurantId])
+  @@index([branchId])
+  @@index([tableId])
+  @@index([active])
+  @@index([assignedAt])
+}
+
+model CardScanLog {
+  id           String        @id @default(cuid())
+  cardId       String
+  card         PlatformCard  @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  restaurantId String?
+  restaurant   Restaurant?   @relation(fields: [restaurantId], references: [id], onDelete: SetNull)
+  branchId     String?
+  branch       Branch?       @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  tableId      String?
+  table        DiningTable?  @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  token        String
+  device       String?
+  browser      String?
+  os           String?
+  country      String?
+  city         String?
+  language     String?
+  referrer     String?
+  ipHash       String?
+  responseTime Int?
+  userAgent    String?
+  scannedAt    DateTime      @default(now())
+
+  @@index([cardId])
+  @@index([token])
+  @@index([scannedAt])
+  @@index([restaurantId])
+}
+
+model CardBatch {
+  id          String         @id @default(cuid())
+  name        String
+  quantity    Int
+  cardType    CardType       @default(QR_ONLY)
+  createdById String?
+  createdAt   DateTime       @default(now())
+  cards       PlatformCard[]
+
+  @@index([createdAt])
+}
+
+model PrintQueueItem {
+  id                    String           @id @default(cuid())
+  cardId                String
+  card                  PlatformCard     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  sheetType             PrintSheetType   @default(A4)
+  status                PrintQueueStatus @default(PENDING)
+  includeRestaurantName Boolean          @default(false)
+  includeTableNumber    Boolean          @default(false)
+  createdAt             DateTime         @default(now())
+  completedAt           DateTime?
+
+  @@index([status])
+  @@index([cardId])
+}
+
+model PlatformCardSettings {
+  id                 String   @id @default("default")
+  scanBaseUrl        String   @default("https://menu.yourdomain.com")
+  tokenLength        Int      @default(8)
+  rateLimitPerMinute Int      @default(60)
+  defaultCardType    CardType @default(QR_ONLY)
+  updatedAt          DateTime @updatedAt
 }

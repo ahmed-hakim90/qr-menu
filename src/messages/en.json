@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "QR Menu",
+    "appName": "Smart Menu",
     "search": "Search menu...",
     "share": "Share",
     "copyLink": "Copy Link",
@@ -26,8 +26,168 @@
     "learnMore": "Learn More"
   },
   "landing": {
-    "hero": "Professional QR Menu Platform",
-    "heroSubtitle": "Transform your restaurant menu into an elegant digital experience. No app, no hassle.",
+    "badge": "Digital solutions for restaurants & hospitality",
+    "hero": "Professional Digital Menu Platform",
+    "heroSubtitle": "Transform your restaurant menu into an elegant digital experience. No app, no hassle — customers scan a QR and browse instantly.",
+    "nav": {
+      "challenge": "Challenge & Solution",
+      "about": "About Us",
+      "vision": "Vision",
+      "solution": "Solution",
+      "customers": "Customers"
+    },
+    "challenge": {
+      "label": "Challenge & Solution",
+      "title": "Restaurant businesses need an integrated digital solution",
+      "subtitle": "Restaurants and cafés across the Arab region face mounting pressure — rising costs, fierce competition, and customers who expect a digital experience. Paper menus are no longer enough.",
+      "business": {
+        "title": "Today's market reality",
+        "p1": "The hospitality sector in the Arab region is undergoing a major shift. Customers expect to browse menus on their phones, see current prices and offers, and order or reserve with ease. Meanwhile, restaurant owners juggle multiple branches, changing prices, and seasonal promotions — all with traditional tools.",
+        "p2": "Smart Menu was built to bridge this gap: we understand restaurant business from the inside, and we build a simple tech solution that turns daily challenges into real growth opportunities — without technical complexity or high costs."
+      },
+      "problemLabel": "The challenge",
+      "solutionLabel": "Our solution",
+      "pairs": {
+        "menu": {
+          "problem": {
+            "title": "Outdated, costly paper menus",
+            "desc": "Every price change or offer requires reprinting and redesign. The menu doesn't reflect reality, and customers notice."
+          },
+          "solution": {
+            "title": "A live, instantly updated digital menu",
+            "desc": "Edit any item, price, or offer from your dashboard — changes appear instantly for all customers across every branch."
+          }
+        },
+        "operations": {
+          "problem": {
+            "title": "Scattered operations across different tools",
+            "desc": "The menu is in one place, orders in another, reservations on paper or WhatsApp. No clear picture of how the restaurant runs."
+          },
+          "solution": {
+            "title": "One platform for all restaurant operations",
+            "desc": "Menu, orders, reservations, cashier, and captain — all connected in one system you can monitor from a single place."
+          }
+        },
+        "growth": {
+          "problem": {
+            "title": "No data to support your decisions",
+            "desc": "You don't know which items sell best, when peak hours are, or how promotions affect revenue."
+          },
+          "solution": {
+            "title": "Analytics and reports that guide decisions",
+            "desc": "Track sales, orders, and reservations — understand what works so you can improve your menu and offers intelligently."
+          }
+        },
+        "competition": {
+          "problem": {
+            "title": "Competition is accelerating and customers have options",
+            "desc": "Restaurants around you offer smooth digital experiences. If your menu feels outdated, customers perceive you as behind."
+          },
+          "solution": {
+            "title": "A professional customer experience that sets you apart",
+            "desc": "A modern menu design, clear photos, search and filters, and QR on every table — an experience customers remember."
+          }
+        }
+      },
+      "outcome": {
+        "title": "The result: a smarter restaurant, happier customers, stronger business",
+        "desc": "When you solve these challenges with one integrated solution, you save time and money, improve customer experience, and build a solid foundation for growth. That's exactly what Smart Menu delivers.",
+        "cta": "Start your digital transformation"
+      }
+    },
+    "about": {
+      "label": "About Us",
+      "title": "Your technology partner in hospitality",
+      "p1": "Smart Menu is a team specialized in building digital solutions for the restaurant and hospitality sector in the Arab region. We understand daily restaurant challenges — from updating prices and offers, to managing multiple branches and mobile customer experience.",
+      "p2": "We build simple yet powerful tools that let restaurants fully control their menu from one place, delivering a professional experience without developing an app or investing in complex systems.",
+      "stats": {
+        "experience": { "value": "100%", "label": "Hospitality-focused" },
+        "focus": { "value": "24/7", "label": "Your menu always available" },
+        "support": { "value": "Arabic", "label": "Full Arabic support" },
+        "local": { "value": "Local", "label": "Built for the Arab market" }
+      }
+    },
+    "vision": {
+      "label": "Vision & Mission",
+      "title": "Where we're headed and why we exist",
+      "visionTitle": "Our Vision",
+      "visionText": "For every restaurant and café in the Arab region to deliver a world-class digital experience — simple for the customer, smart for the business, and sustainable long-term.",
+      "missionTitle": "Our Mission",
+      "missionText": "Empower restaurant owners to go digital at the lowest cost and complexity. We provide an integrated platform for menu management, orders, branches, and analytics — so restaurants can focus on what they do best: food and hospitality."
+    },
+    "recommend": {
+      "label": "We Recommend",
+      "title": "Digital menus over paper",
+      "subtitle": "After working with dozens of restaurants, a digital menu isn't a luxury — it's a necessity. Customers expect mobile-first experiences, and restaurants need real-time control over offers and pricing.",
+      "items": {
+        "instant": {
+          "title": "Instant updates, no reprinting",
+          "desc": "Change a price, add an offer, or pause an item — changes appear instantly without reprinting menus."
+        },
+        "cost": {
+          "title": "Lower operating costs",
+          "desc": "Eliminate recurring printing and design costs. Invest once in a digital menu that serves you year-round."
+        },
+        "experience": {
+          "title": "Better customer experience",
+          "desc": "Clear photos, fast search, dietary filters, and favorites — a smarter experience than traditional paper menus."
+        },
+        "control": {
+          "title": "Full control from one dashboard",
+          "desc": "Manage all branches, products, offers, and reservations from a single dashboard — no tech team required."
+        }
+      }
+    },
+    "solution": {
+      "label": "Technical Solution",
+      "title": "Modern technology, simple experience",
+      "subtitle": "We deliver an integrated cloud platform combining smart QR codes, an interactive menu, and a full dashboard — all browser-based, no app required.",
+      "stack": {
+        "qr": {
+          "title": "QR & NFC",
+          "desc": "QR codes for every branch and table, with NFC card support for tap-to-open."
+        },
+        "pwa": {
+          "title": "Interactive web menu",
+          "desc": "Fast mobile experience without downloading an app — a modern PWA with full RTL support."
+        },
+        "cloud": {
+          "title": "Secure cloud",
+          "desc": "Your data on cloud servers with backups and automatic updates."
+        },
+        "ops": {
+          "title": "Operations management",
+          "desc": "Orders, reservations, cashier, captain, and analytics — a complete restaurant operating system."
+        }
+      }
+    },
+    "customers": {
+      "label": "Our Customers",
+      "title": "Who we serve",
+      "subtitle": "Our platform is built for every type of food & beverage business — from small restaurants to large chains.",
+      "types": {
+        "restaurants": {
+          "title": "Restaurants",
+          "desc": "Family and mid-size restaurants with multiple branches"
+        },
+        "cafes": {
+          "title": "Cafés",
+          "desc": "Coffee shops with fast mobile-first experience"
+        },
+        "hotels": {
+          "title": "Hotels",
+          "desc": "Hotel restaurants and room service"
+        },
+        "cloudKitchens": {
+          "title": "Cloud kitchens",
+          "desc": "Delivery brands without dine-in seating"
+        },
+        "foodTrucks": {
+          "title": "Food trucks",
+          "desc": "Quick, flexible solutions for mobile operations"
+        }
+      }
+    },
     "features": {
       "title": "Everything You Need",
       "qr": "Instant QR Code",
@@ -43,7 +203,12 @@
       "fast": "Lightning Fast",
       "fastDesc": "High performance and instant loading"
     },
-    "cta": "Start Free Today"
+    "cta": "Start Free Today",
+    "ctaSubtitle": "Join restaurants that have already gone digital. Sign up in minutes and get started.",
+    "footer": {
+      "tagline": "Smart digital menu solutions for restaurants and hospitality in the Arab region.",
+      "rights": "All rights reserved."
+    }
   },
   "menu": {
     "hours": "Working Hours",

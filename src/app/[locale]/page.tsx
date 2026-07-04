@@ -6,6 +6,10 @@ export async function generateMetadata() {
   return {
     title: t("hero"),
     description: t("heroSubtitle"),
+    openGraph: {
+      title: t("hero"),
+      description: t("about.p1"),
+    },
   };
 }
 

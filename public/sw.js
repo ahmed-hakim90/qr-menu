@@ -23,7 +23,7 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("push", (event) => {
-  let data = { title: "QR Menu", body: "You have a new notification", url: "/" };
+  let data = { title: "Smart Menu", body: "You have a new notification", url: "/" };
 
   try {
     if (event.data) {

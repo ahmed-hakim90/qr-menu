@@ -300,3 +300,117 @@ body {
   font-family: Georgia, "Times New Roman", serif;
   color: #d4af37;
 }
+
+/* Landing page — liquid glass & motion */
+@keyframes landing-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-18px) rotate(2deg); }
+}
+
+@keyframes landing-shimmer {
+  0% { transform: translateX(-120%) skewX(-12deg); }
+  100% { transform: translateX(220%) skewX(-12deg); }
+}
+
+@keyframes landing-glow-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(1.08); }
+}
+
+.liquid-glass {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--card) 72%, transparent),
+    color-mix(in srgb, var(--card) 38%, transparent)
+  );
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
+  box-shadow:
+    0 8px 32px color-mix(in srgb, var(--foreground) 6%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 28%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, white 6%, transparent);
+}
+
+.dark .liquid-glass {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--card) 55%, transparent),
+    color-mix(in srgb, var(--card) 22%, transparent)
+  );
+  border-color: color-mix(in srgb, white 10%, transparent);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 color-mix(in srgb, white 12%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, white 4%, transparent);
+}
+
+.liquid-glass-strong {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--card) 88%, transparent),
+    color-mix(in srgb, var(--primary) 6%, transparent)
+  );
+  backdrop-filter: blur(32px) saturate(200%);
+  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
+  box-shadow:
+    0 12px 48px color-mix(in srgb, var(--primary) 12%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 35%, transparent);
+}
+
+.liquid-glass-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.liquid-glass-shine__glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    color-mix(in srgb, white 22%, transparent) 50%,
+    transparent 62%
+  );
+  animation: landing-shimmer 6s ease-in-out infinite;
+}
+
+.liquid-glass-shine > *:not(.liquid-glass-shine__glow) {
+  position: relative;
+  z-index: 2;
+}
+
+.landing-orb {
+  border-radius: 9999px;
+  filter: blur(60px);
+  animation: landing-glow-pulse 6s ease-in-out infinite;
+}
+
+.landing-card-hover {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+}
+
+.landing-card-hover:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow:
+    0 20px 48px color-mix(in srgb, var(--foreground) 10%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 30%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-orb,
+  .liquid-glass-shine__glow {
+    animation: none;
+  }
+
+  .landing-card-hover:hover {
+    transform: none;
+  }
+}

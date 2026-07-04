@@ -23,7 +23,7 @@ export default async function QRCodesPage() {
       <h1 className="text-2xl font-bold mb-6">QR Codes</h1>
       <QRGenerator
         branches={branches}
-        restaurantName={restaurant?.nameEn ?? "QR Menu"}
+        restaurantName={restaurant?.nameEn ?? "Smart Menu"}
         restaurantNameAr={restaurant?.nameAr ?? "قائمة الطعام"}
       />
     </div>

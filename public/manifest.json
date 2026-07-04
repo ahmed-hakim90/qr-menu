@@ -1,6 +1,6 @@
 {
-  "name": "QR Menu",
-  "short_name": "QR Menu",
+  "name": "Smart Menu",
+  "short_name": "Smart Menu",
   "description": "Professional digital menu platform",
   "start_url": "/",
   "display": "standalone",

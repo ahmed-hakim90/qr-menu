@@ -103,6 +103,7 @@ function isNavFeatureEnabled(
 
 export function DashboardSidebar({ userName, userRole, features }: DashboardSidebarProps) {
   const t = useTranslations("dashboard");
+  const tCommon = useTranslations("common");
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -113,7 +114,7 @@ export function DashboardSidebar({ userName, userRole, features }: DashboardSide
       <div className="p-6 border-b border-border/50">
         <Link href="/" className="flex items-center gap-2 font-bold text-lg">
           <QrCode className="h-5 w-5 text-primary" />
-          QR Menu
+          {tCommon("appName")}
         </Link>
         <p className="text-sm text-muted-foreground mt-2">{userName}</p>
       </div>
