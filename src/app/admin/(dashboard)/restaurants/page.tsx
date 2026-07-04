@@ -17,6 +17,12 @@ export default async function AdminRestaurantsPage() {
           isActive: true,
         },
       },
+      branches: {
+        where: { isActive: true },
+        orderBy: { sortOrder: "asc" },
+        take: 1,
+        select: { slug: true },
+      },
       _count: {
         select: {
           branches: true,

@@ -5,12 +5,23 @@ function normalizeHost(host: string) {
 }
 
 export function getAppHostname() {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  return new URL(appUrl).hostname.toLowerCase();
+  if (process.env.NEXT_PUBLIC_APP_DOMAIN) {
+    return process.env.NEXT_PUBLIC_APP_DOMAIN.toLowerCase();
+  }
+
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return new URL(process.env.NEXT_PUBLIC_APP_URL).hostname.toLowerCase();
+  }
+
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return process.env.VERCEL_PROJECT_PRODUCTION_URL.toLowerCase();
+  }
+
+  return "localhost";
 }
 
 export function getAppDomain() {
-  return (process.env.NEXT_PUBLIC_APP_DOMAIN || getAppHostname()).toLowerCase();
+  return getAppHostname();
 }
 
 export function extractSubdomain(host: string) {

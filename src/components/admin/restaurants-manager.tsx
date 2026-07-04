@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ChevronDown, Users } from "lucide-react";
+import { ChevronDown, ExternalLink, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { buildMenuUrl } from "@/lib/menu-url";
 import type { Plan, Restaurant, Subscription, SubscriptionStatus, UserRole } from "@/generated/prisma";
 
 type UserRow = {
@@ -17,9 +18,14 @@ type UserRow = {
   isActive: boolean;
 };
 
+type BranchRow = {
+  slug: string;
+};
+
 type RestaurantRow = Restaurant & {
   subscription: (Subscription & { plan: Plan }) | null;
   users: UserRow[];
+  branches: BranchRow[];
   _count: { branches: number; products: number; users: number };
 };
 
@@ -53,6 +59,13 @@ export function RestaurantsManager({ restaurants, appDomain }: RestaurantsManage
       <div className="grid gap-4">
         {restaurants.map((restaurant) => {
           const isOpen = expanded === restaurant.id;
+          const branchSlug = restaurant.branches[0]?.slug;
+          const menuUrl = branchSlug
+            ? buildMenuUrl({
+                branchSlug,
+                customDomain: restaurant.customDomain,
+              })
+            : null;
           return (
             <Card key={restaurant.id}>
               <CardContent className="p-6 space-y-4">
@@ -60,7 +73,20 @@ export function RestaurantsManager({ restaurants, appDomain }: RestaurantsManage
                   <div>
                     <h3 className="font-semibold text-lg">{restaurant.nameEn}</h3>
                     <p className="text-sm text-muted-foreground">{restaurant.nameAr}</p>
-                    <p className="text-sm text-muted-foreground mt-1">
+                    {menuUrl ? (
+                      <a
+                        href={menuUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline mt-1 font-mono"
+                      >
+                        {menuUrl}
+                        <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                      </a>
+                    ) : (
+                      <p className="text-sm text-muted-foreground mt-1">No active branch</p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-1">
                       {restaurant.subdomain}.{appDomain}
                       {restaurant.customDomain ? ` · ${restaurant.customDomain}` : ""}
                     </p>

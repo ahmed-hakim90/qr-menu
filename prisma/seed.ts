@@ -4,7 +4,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
 import bcrypt from "bcryptjs";
 import { ANTIKA_BRAND, ANTIKA_CATEGORIES } from "./antika-data";
-import { MENU_THEMES } from "../src/lib/menu-themes";
+import { ensureMenuThemes } from "./ensure-menu-themes";
 
 const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL;
 
@@ -76,35 +76,7 @@ async function seedPlans() {
 }
 
 async function seedMenuThemes() {
-  await Promise.all(
-    Object.values(MENU_THEMES).map((theme, sortOrder) =>
-      db.menuTheme.upsert({
-        where: { slug: theme.slug },
-        update: {
-          nameAr: theme.nameAr,
-          nameEn: theme.nameEn,
-          descriptionAr: theme.descriptionAr,
-          descriptionEn: theme.descriptionEn,
-          isPremium: theme.isPremium,
-          price: theme.price,
-          sortOrder,
-          isActive: true,
-        },
-        create: {
-          id: `menu_theme_${theme.slug}`,
-          slug: theme.slug,
-          nameAr: theme.nameAr,
-          nameEn: theme.nameEn,
-          descriptionAr: theme.descriptionAr,
-          descriptionEn: theme.descriptionEn,
-          isPremium: theme.isPremium,
-          price: theme.price,
-          sortOrder,
-          isActive: true,
-        },
-      })
-    )
-  );
+  await ensureMenuThemes(db);
 }
 
 async function clearTenantData() {
@@ -209,7 +181,7 @@ async function main() {
       restaurantId: restaurant.id,
       themeSlug: "antika",
       status: "ACTIVE",
-      pricePaid: 199,
+      pricePaid: 15000,
       paymentReference: "seed-antika",
     },
   });

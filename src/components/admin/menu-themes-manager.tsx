@@ -241,11 +241,11 @@ export function MenuThemesManager({ themes }: MenuThemesManagerProps) {
               </label>
 
               <div className="space-y-2">
-                <Label>One-time price</Label>
+                <Label>One-time price (EGP)</Label>
                 <Input
                   type="number"
                   min="0"
-                  step="0.01"
+                  step="1"
                   value={editing.slug === "classic" ? "0" : form.price}
                   disabled={editing.slug === "classic" || !form.isPremium}
                   onChange={(e) => setForm({ ...form, price: e.target.value })}

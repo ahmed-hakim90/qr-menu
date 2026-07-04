@@ -4,7 +4,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
 import bcrypt from "bcryptjs";
 import { SOUL_BRAND, SOUL_CATEGORIES, SOUL_DRINK_CATEGORIES } from "./soul-data";
-import { MENU_THEMES } from "../src/lib/menu-themes";
+import { ensureMenuThemes } from "./ensure-menu-themes";
 
 const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL;
 
@@ -17,35 +17,7 @@ const adapter = new PrismaPg(pool);
 const db = new PrismaClient({ adapter });
 
 async function seedMenuThemes() {
-  await Promise.all(
-    Object.values(MENU_THEMES).map((theme, sortOrder) =>
-      db.menuTheme.upsert({
-        where: { slug: theme.slug },
-        update: {
-          nameAr: theme.nameAr,
-          nameEn: theme.nameEn,
-          descriptionAr: theme.descriptionAr,
-          descriptionEn: theme.descriptionEn,
-          isPremium: theme.isPremium,
-          price: theme.price,
-          sortOrder,
-          isActive: true,
-        },
-        create: {
-          id: `menu_theme_${theme.slug}`,
-          slug: theme.slug,
-          nameAr: theme.nameAr,
-          nameEn: theme.nameEn,
-          descriptionAr: theme.descriptionAr,
-          descriptionEn: theme.descriptionEn,
-          isPremium: theme.isPremium,
-          price: theme.price,
-          sortOrder,
-          isActive: true,
-        },
-      })
-    )
-  );
+  await ensureMenuThemes(db);
 }
 
 async function clearSoulTenant(slug: string) {
@@ -154,7 +126,7 @@ async function main() {
       restaurantId: restaurant.id,
       themeSlug: "soul",
       status: "ACTIVE",
-      pricePaid: 199,
+      pricePaid: 25000,
       paymentReference: "seed-soul",
     },
   });

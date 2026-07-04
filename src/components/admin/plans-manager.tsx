@@ -154,8 +154,15 @@ export function PlansManager({ plans }: PlansManagerProps) {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Price / month</Label>
-                  <Input type="number" step="0.01" value={form.priceMonthly} onChange={(e) => setForm({ ...form, priceMonthly: e.target.value })} required />
+                  <Label>Price / month (EGP)</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={form.priceMonthly}
+                    onChange={(e) => setForm({ ...form, priceMonthly: e.target.value })}
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label>Name (Arabic)</Label>
