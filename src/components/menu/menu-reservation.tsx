@@ -107,12 +107,29 @@ export function MenuReservation({
   };
 
   const isAntika = menuTheme === "antika";
+  const isSoul = menuTheme === "soul";
   const isBistro = menuTheme === "bistro";
   const buttonClass = isAntika
     ? "h-9 border-[#d7c7b2] bg-[#fffaf1] text-xs text-[#2a160f] hover:bg-[#f0dfc4] sm:text-sm"
-    : isBistro
+    : isSoul
+      ? "h-9 border-[#3d3528] bg-[#252018] text-xs text-[#f5f0e8] hover:bg-[#2a2520] sm:text-sm"
+      : isBistro
       ? "h-9 border-[#c9a84c]/30 bg-[#1c1915] text-xs text-[#f5f0e8] hover:bg-[#252018] hover:text-[#f5f0e8] sm:text-sm"
       : "h-9 text-xs sm:text-sm";
+  const dialogContentClass = isAntika
+    ? "antika-menu max-w-md border-[#d7c7b2] bg-[#fffaf1] text-[#2a160f]"
+    : isSoul
+      ? "soul-menu max-w-md border-[#3d3528] bg-[#252018] text-[#f5f0e8]"
+      : isBistro
+      ? "bistro-menu max-w-md border-[#3d3528]"
+      : "max-w-md";
+  const submitButtonClass = isAntika
+    ? "w-full bg-[#b67b31] text-[#fffaf1] hover:bg-[#9a6829]"
+    : isSoul
+      ? "w-full bg-[#d4af37] text-[#1c1915] hover:bg-[#c4a030]"
+      : isBistro
+      ? "w-full bg-[#c9a84c] text-[#141210] hover:bg-[#b89840]"
+      : "w-full";
 
   return (
     <div className="flex flex-wrap gap-2">
@@ -123,9 +140,17 @@ export function MenuReservation({
             {labels.book}
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-md">
+        <DialogContent className={dialogContentClass}>
           <DialogHeader>
-            <DialogTitle>{labels.title}</DialogTitle>
+            <DialogTitle
+              className={cn(
+                isAntika && "text-[#b67b31] font-normal",
+                isSoul && "text-[#d4af37] font-normal italic",
+                isBistro && "text-[#c9a84c]"
+              )}
+            >
+              {labels.title}
+            </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
@@ -178,7 +203,7 @@ export function MenuReservation({
                 rows={3}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={submitting}>
+            <Button type="submit" className={submitButtonClass} disabled={submitting}>
               {submitting ? labels.submitting : labels.submit}
             </Button>
           </form>

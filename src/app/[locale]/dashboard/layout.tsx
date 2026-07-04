@@ -19,7 +19,7 @@ export default async function DashboardLayout({
       <DashboardSidebar
         userName={session.name}
         userRole={session.role}
-        features={{ hasTables: limits.hasTables }}
+        features={{ hasTables: limits.hasTables, hasOrdering: limits.hasOrdering }}
       />
       <main className="lg:ps-64 min-h-screen">
         <div className="p-6 pt-16 lg:pt-6">{children}</div>

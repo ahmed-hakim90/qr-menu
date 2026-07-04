@@ -45,11 +45,14 @@ export function MenuCartBar({
   if (!tableNumber || items.length === 0) return null;
 
   const isAntika = menuTheme === "antika";
+  const isSoul = menuTheme === "soul";
   const isBistro = menuTheme === "bistro";
 
   const barClass = isAntika
     ? "border-[#b67b31]/40 bg-[#2a160f]/95 text-[#f5eee3]"
-    : isBistro
+    : isSoul
+      ? "border-[#d4af37]/30 bg-[#1c1915]/95 text-[#f5f0e8]"
+      : isBistro
       ? "border-[#c9a84c]/25 bg-[#141210]/95 text-[#f5f0e8]"
       : "border-border bg-background/95";
 
@@ -98,7 +101,7 @@ export function MenuCartBar({
           onClick={() => setOpen(true)}
           className={cn(
             "mx-auto flex w-full items-center gap-3 px-4 py-3.5",
-            isAntika ? "max-w-5xl" : "max-w-4xl"
+            isAntika || isSoul ? "max-w-5xl" : "max-w-4xl"
           )}
         >
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">

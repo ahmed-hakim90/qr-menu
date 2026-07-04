@@ -1,10 +1,24 @@
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ReservationsManager } from "@/components/reservations/reservations-manager";
+import { getEffectiveLimits, getRestaurantSubscription } from "@/lib/plans";
+import { PlanUpgradePrompt } from "@/components/dashboard/plan-upgrade-prompt";
 
 export default async function ReservationsPage() {
   const session = await getSession();
   if (!session) return null;
+
+  const subscription = await getRestaurantSubscription(session.restaurantId);
+  const limits = getEffectiveLimits(subscription);
+
+  if (!limits.hasTables) {
+    return (
+      <PlanUpgradePrompt
+        title="Reservations"
+        description="Your current plan is menu-only. Upgrade to enable table reservations."
+      />
+    );
+  }
 
   const [branches, tables] = await Promise.all([
     db.branch.findMany({

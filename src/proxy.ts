@@ -39,7 +39,12 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (pathname.startsWith("/dashboard") || pathname.match(/\/[a-z]{2}\/dashboard/)) {
+  const isProtectedAppRoute =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/menu-preview") ||
+    pathname.match(/\/[a-z]{2}\/(dashboard|menu-preview)/);
+
+  if (isProtectedAppRoute) {
     const session = request.cookies.get("session");
     if (!session) {
       const locale = pathname.startsWith("/en") ? "en" : "ar";

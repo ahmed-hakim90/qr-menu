@@ -53,12 +53,13 @@ export function ProductDetailView({
   const allergens = locale === "ar" ? product.allergensAr : product.allergensEn;
   const hasDiscount = product.compareAtPrice && product.compareAtPrice > product.price;
   const isAntika = menuTheme === "antika";
+  const isSoul = menuTheme === "soul";
 
   const allImages = [
     ...(product.image ? [product.image] : []),
     ...product.images.map((img) => img.url),
   ];
-  const fallbackImage = product.category.image || branch.coverImage || branch.restaurant.coverImage || "/brands/antika/cover.png";
+  const fallbackImage = product.category.image || branch.coverImage || branch.restaurant.coverImage || (isSoul ? "/brands/soul/cover.png" : "/brands/antika/cover.png");
   const displayImages = allImages.length > 0 ? allImages : [fallbackImage];
 
   const handleShare = async () => {
@@ -84,24 +85,33 @@ export function ProductDetailView({
 
   const tableQuery = tableNumber ? `?table=${tableNumber}` : "";
 
-  if (isAntika) {
+  if (isAntika || isSoul) {
+    const accent = isSoul ? "#d4af37" : "#b67b31";
+    const bg = isSoul ? "#1c1915" : "#f5eee3";
+    const card = isSoul ? "#252018" : "#fffaf1";
+    const text = isSoul ? "#f5f0e8" : "#2a160f";
+    const muted = isSoul ? "#a89f8f" : "#6f5640";
+    const border = isSoul ? "#3d3528" : "#d7c7b2";
+    const menuClass = isSoul ? "soul-menu" : "antika-menu";
+    const priceClass = isSoul ? "soul-price" : "antika-price";
+
     return (
-      <div className="antika-menu min-h-screen text-[#2a160f]">
-        <div className="sticky top-0 z-30 border-b border-[#d7c7b2] bg-[#f5eee3]/90 px-4 py-3 backdrop-blur-xl">
+      <div className={cn(menuClass, "min-h-screen")} style={{ color: text, background: bg }}>
+        <div className="sticky top-0 z-30 border-b px-4 py-3 backdrop-blur-xl" style={{ borderColor: border, background: `${bg}e6` }}>
           <div className="mx-auto flex max-w-5xl items-center justify-between">
-            <Button variant="ghost" size="icon" asChild className="text-[#2a160f] hover:bg-[#eadfce]">
+            <Button variant="ghost" size="icon" asChild style={{ color: text }}>
               <Link href={`/menu/${branch.slug}${tableQuery}`}>
                 <ArrowLeft className="h-5 w-5" />
               </Link>
             </Button>
-            <p className="font-serif text-lg text-[#b67b31]">
+            <p className="text-lg" style={{ color: accent }}>
               {locale === "ar" ? product.category.nameAr : product.category.nameEn}
             </p>
             <div className="flex gap-1">
-              <Button variant="ghost" size="icon" onClick={handleShare} className="text-[#2a160f] hover:bg-[#eadfce]">
+              <Button variant="ghost" size="icon" onClick={handleShare} style={{ color: text }}>
                 <Share2 className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={handleCopyLink} className="text-[#2a160f] hover:bg-[#eadfce]">
+              <Button variant="ghost" size="icon" onClick={handleCopyLink} style={{ color: text }}>
                 <Link2 className="h-5 w-5" />
               </Button>
             </div>
@@ -112,7 +122,8 @@ export function ProductDetailView({
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="fixed left-1/2 top-16 z-50 -translate-x-1/2 rounded-full bg-[#2a160f] px-4 py-2 text-sm text-[#f5eee3]"
+            className="fixed left-1/2 top-16 z-50 -translate-x-1/2 rounded-full px-4 py-2 text-sm"
+            style={{ background: text, color: bg }}
           >
             {t("common.copied")}
           </motion.div>
@@ -120,7 +131,7 @@ export function ProductDetailView({
 
         <main className="mx-auto grid max-w-5xl gap-8 px-4 py-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
           <section className="space-y-3">
-            <div className="relative aspect-[4/3] overflow-hidden border border-[#d7c7b2] bg-[#fffaf1] shadow-xl">
+            <div className="relative aspect-[4/3] overflow-hidden border shadow-xl" style={{ borderColor: border, background: card }}>
               <Image
                 src={displayImages[selectedImage] || fallbackImage}
                 alt={name}
@@ -129,61 +140,27 @@ export function ProductDetailView({
                 priority
                 sizes="(max-width: 1024px) 100vw, 560px"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#2a160f]/35 via-transparent to-transparent" />
             </div>
-
-            {displayImages.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto">
-                {displayImages.map((img, i) => (
-                  <button
-                    key={`${img}-${i}`}
-                    onClick={() => setSelectedImage(i)}
-                    className={cn(
-                      "relative h-16 w-16 shrink-0 overflow-hidden border-2 bg-[#fffaf1] transition-all",
-                      selectedImage === i ? "border-[#b67b31]" : "border-[#d7c7b2] opacity-70"
-                    )}
-                  >
-                    <Image src={img} alt="" fill className="object-cover" sizes="64px" />
-                  </button>
-                ))}
-              </div>
-            )}
           </section>
 
-          <section className="space-y-6 border-y-2 border-[#b67b31] bg-[#fffaf1]/80 p-5 shadow-[inset_0_0_0_1px_rgba(182,123,49,0.22)] sm:p-7">
+          <section className="space-y-6 border-y-2 p-5 sm:p-7" style={{ borderColor: accent, background: `${card}cc` }}>
             <div>
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <ProductBadges product={product} labels={badgeLabels} />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => toggleFavorite(product.id)}
-                  className="text-[#2a160f] hover:bg-[#eadfce]"
-                >
-                  <Heart className={cn("h-5 w-5", isFavorite(product.id) && "fill-red-500 text-red-500")} />
-                </Button>
-              </div>
-              <p className="font-serif text-xl text-[#b67b31]">
+              <ProductBadges product={product} labels={badgeLabels} />
+              <p className="mt-3 text-xl" style={{ color: accent }}>
                 {locale === "ar" ? product.nameEn : product.nameAr}
               </p>
               <h1 className="mt-2 text-4xl font-bold leading-tight">{name}</h1>
-              {description && (
-                <p className="mt-4 leading-7 text-[#6f5640]">{description}</p>
-              )}
+              {description && <p className="mt-4 leading-7" style={{ color: muted }}>{description}</p>}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 border-y border-[#d7c7b2] py-4">
-              <span className="font-serif text-4xl text-[#b67b31]">
+            <div className="flex flex-wrap items-center gap-3 border-y py-4" style={{ borderColor: border }}>
+              <span className={cn(priceClass, "text-4xl")} style={{ color: accent }}>
                 {formatPrice(product.price, currency)}
               </span>
-              {hasDiscount && (
-                <span className="text-lg text-[#6f5640] line-through">
-                  {formatPrice(product.compareAtPrice!, currency)}
-                </span>
-              )}
               {tableNumber && (
                 <Button
-                  className="ms-auto bg-[#2a160f] text-[#f5eee3] hover:bg-[#b67b31]"
+                  className="ms-auto"
+                  style={{ background: isSoul ? accent : text, color: isSoul ? text : bg }}
                   onClick={() =>
                     addItem({
                       productId: product.id,
@@ -198,90 +175,6 @@ export function ProductDetailView({
                 </Button>
               )}
             </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-[#f5eee3] p-3 text-sm">
-                <span className="text-[#6f5640]">{locale === "ar" ? "القسم" : "Category"}</span>
-                <p className="font-semibold">{locale === "ar" ? product.category.nameAr : product.category.nameEn}</p>
-              </div>
-              {product.temperature && (
-                <div className="flex items-start gap-2 bg-[#f5eee3] p-3 text-sm">
-                  <Thermometer className="mt-0.5 h-4 w-4 text-[#b67b31]" />
-                  <div>
-                    <span className="text-[#6f5640]">{t("menu.temperature")}</span>
-                    <p className="font-semibold">{product.temperature}</p>
-                  </div>
-                </div>
-              )}
-              {product.spiceLevel && (
-                <div className="flex items-start gap-2 bg-[#f5eee3] p-3 text-sm">
-                  <Flame className="mt-0.5 h-4 w-4 text-[#b67b31]" />
-                  <div>
-                    <span className="text-[#6f5640]">{t("menu.spiceLevel")}</span>
-                    <p className="font-semibold">{"🌶️".repeat(product.spiceLevel)}</p>
-                  </div>
-                </div>
-              )}
-              {product.prepTime && (
-                <div className="flex items-start gap-2 bg-[#f5eee3] p-3 text-sm">
-                  <Clock className="mt-0.5 h-4 w-4 text-[#b67b31]" />
-                  <div>
-                    <span className="text-[#6f5640]">{t("menu.prepTime")}</span>
-                    <p className="font-semibold">{product.prepTime} {t("menu.minutes")}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {ingredients && (
-              <div>
-                <h3 className="mb-2 font-semibold">{t("menu.ingredients")}</h3>
-                <p className="leading-7 text-[#6f5640]">{ingredients}</p>
-              </div>
-            )}
-
-            {allergens && (
-              <div>
-                <h3 className="mb-2 font-semibold">{t("menu.allergens")}</h3>
-                <p className="leading-7 text-[#6f5640]">{allergens}</p>
-              </div>
-            )}
-
-            {product.productSizes.length > 0 && (
-              <div>
-                <h3 className="mb-3 font-semibold">{t("menu.sizes")}</h3>
-                <div className="flex flex-wrap gap-2">
-                  {product.productSizes.map((ps) => (
-                    <div key={ps.id} className="border border-[#d7c7b2] bg-[#f5eee3] px-4 py-2 text-sm">
-                      <span className="font-medium">
-                        {locale === "ar" ? ps.size.nameAr : ps.size.nameEn}
-                      </span>
-                      {ps.price && (
-                        <span className="ms-2 font-semibold text-[#b67b31]">
-                          {formatPrice(ps.price, currency)}
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {product.productAddons.length > 0 && (
-              <div>
-                <h3 className="mb-3 font-semibold">{t("menu.addons")}</h3>
-                <div className="space-y-2">
-                  {product.productAddons.map((pa) => (
-                    <div key={pa.id} className="flex items-center justify-between border border-[#d7c7b2] bg-[#f5eee3] px-4 py-3">
-                      <span>{locale === "ar" ? pa.addon.nameAr : pa.addon.nameEn}</span>
-                      <span className="font-semibold text-[#b67b31]">
-                        +{formatPrice(pa.addon.price, currency)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </section>
         </main>
 
@@ -290,6 +183,7 @@ export function ProductDetailView({
           currencySymbol={currencySymbol}
           sessionId={sessionId}
           tableNumber={tableNumber}
+          menuTheme={menuTheme}
           items={items}
           total={total}
           onUpdateQuantity={updateQuantity}

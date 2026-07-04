@@ -21,11 +21,14 @@ export function MenuTableActions({
   onCallWaiter,
 }: MenuTableActionsProps) {
   const isAntika = menuTheme === "antika";
+  const isSoul = menuTheme === "soul";
   const isBistro = menuTheme === "bistro";
 
   const btnClass = isAntika
     ? "h-9 border-[#d7c7b2] bg-[#fffaf1] text-xs text-[#2a160f] sm:text-sm hover:bg-[#f0dfc4]"
-    : isBistro
+    : isSoul
+      ? "h-9 border-[#3d3528] bg-[#252018] text-xs text-[#f5f0e8] sm:text-sm hover:bg-[#2a2520]"
+      : isBistro
       ? "h-9 border-[#c9a84c]/30 bg-[#1c1915] text-xs text-[#f5f0e8] sm:text-sm hover:bg-[#252018]"
       : "h-9 text-xs sm:text-sm";
 

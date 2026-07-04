@@ -153,7 +153,10 @@
     "selectFailed": "Failed to apply theme",
     "purchaseSubmitted": "Purchase submitted — will activate after payment confirmation",
     "purchaseFailed": "Failed to submit purchase",
-    "paymentRequired": "Payment reference is required"
+    "paymentRequired": "Payment reference is required",
+    "preview": "Preview",
+    "previewTitle": "Preview {theme}",
+    "previewHint": "Internal preview with your current menu — interactions are disabled"
   },
   "auth": {
     "loginTitle": "Login",

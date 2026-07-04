@@ -153,7 +153,10 @@
     "selectFailed": "تعذّر تطبيق الثيم",
     "purchaseSubmitted": "تم إرسال طلب الشراء — سيتم التفعيل بعد تأكيد الدفع",
     "purchaseFailed": "تعذّر إرسال طلب الشراء",
-    "paymentRequired": "مرجع الدفع مطلوب"
+    "paymentRequired": "مرجع الدفع مطلوب",
+    "preview": "معاينة",
+    "previewTitle": "معاينة {theme}",
+    "previewHint": "معاينة داخلية بقائمتك الحالية — التفاعل معطّل"
   },
   "auth": {
     "loginTitle": "تسجيل الدخول",

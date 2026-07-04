@@ -2,9 +2,7 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { TablesManager } from "@/components/dashboard/tables-manager";
 import { getEffectiveLimits, getRestaurantSubscription } from "@/lib/plans";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { PlanUpgradePrompt } from "@/components/dashboard/plan-upgrade-prompt";
 
 export default async function TablesPage() {
   const session = await getSession();
@@ -15,19 +13,10 @@ export default async function TablesPage() {
 
   if (!limits.hasTables) {
     return (
-      <Card>
-        <CardContent className="p-6 space-y-4">
-          <div>
-            <h1 className="text-2xl font-bold">Tables</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Your current plan is menu-only. Upgrade to enable table QR codes and table ordering.
-            </p>
-          </div>
-          <Button asChild>
-            <Link href="/dashboard/billing">View Plans</Link>
-          </Button>
-        </CardContent>
-      </Card>
+      <PlanUpgradePrompt
+        title="Tables"
+        description="Your current plan is menu-only. Upgrade to enable table QR codes and reservations."
+      />
     );
   }
 

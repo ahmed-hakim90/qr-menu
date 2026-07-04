@@ -45,6 +45,8 @@ export function MenuView({
   const theme = getMenuTheme(menuTheme);
   const isListLayout = theme.layout === "list";
   const isAntika = menuTheme === "antika";
+  const isSoul = menuTheme === "soul";
+  const isPremiumList = isAntika || isSoul;
   const { toggleFavorite, isFavorite } = useFavorites();
   const { items, addItem, updateQuantity, clear, total } = useMenuCart();
   const { sessionId, requestBill, callWaiter } = useTableSession(branch.slug, tableNumber);
@@ -102,7 +104,7 @@ export function MenuView({
           branchSlug={branch.slug}
           tableNumber={tableNumber}
           currencySymbol={badgeLabels.currency}
-          variant={isAntika ? "antika" : "minimal"}
+          variant={isAntika ? "antika" : isSoul ? "soul" : "minimal"}
           onAddToCart={
             tableNumber
               ? (product) =>
@@ -145,12 +147,14 @@ export function MenuView({
 
   const inactiveCategoryClass = isAntika
     ? "bg-[#fffaf1] text-[#2a160f] border border-[#d7c7b2] hover:bg-[#f0dfc4]"
-    : menuTheme === "bistro"
+    : isSoul
+      ? "bg-[#252018] text-[#f5f0e8] border border-[#d4af37]/25 hover:bg-[#2a2520]"
+      : menuTheme === "bistro"
       ? "bg-[#1c1915] text-[#f5f0e8] border border-[#c9a84c]/25 hover:bg-[#252018]"
       : "bg-muted text-muted-foreground hover:bg-muted/80";
 
   const handleCategorySelect = (categoryId: string | null) => {
-    if (isAntika) {
+    if (isPremiumList) {
       const target = categoryId ? document.getElementById(categoryId) : document.querySelector("[data-menu-top]");
       target?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -204,7 +208,7 @@ export function MenuView({
       <div
         data-menu-top
         className={cn(
-          isAntika ? "max-w-5xl" : "max-w-4xl",
+          isPremiumList ? "max-w-5xl" : "max-w-4xl",
           "mx-auto px-4",
           tableNumber && items.length > 0 ? "pb-24" : tableNumber ? "pb-10" : "pb-28"
         )}
@@ -238,12 +242,14 @@ export function MenuView({
         ) : (
           <>
             {displayCategories
-              .filter((cat) => isAntika || !activeCategory || cat.id === activeCategory)
+              .filter((cat) => isPremiumList || !activeCategory || cat.id === activeCategory)
               .map((category) => (
                 <section
                   key={category.id}
                   id={category.id}
-                  className={cn(isAntika ? "antika-category-block mb-12" : "mb-10")}
+                  className={cn(
+                    isAntika ? "antika-category-block mb-12" : isSoul ? "soul-category-block mb-12" : "mb-10"
+                  )}
                 >
                   {isAntika ? (
                     <div className="antika-category-heading mb-4">
@@ -271,6 +277,32 @@ export function MenuView({
                         {category.products.filter((p) => p.isAvailable).length} {locale === "ar" ? "صنف" : "items"}
                       </span>
                     </div>
+                  ) : isSoul ? (
+                    <div className="soul-category-heading mb-4">
+                      {category.image && (
+                        <div className="relative h-16 w-20 shrink-0 overflow-hidden border border-[#3d3528] bg-[#252018] sm:h-20 sm:w-28">
+                          <Image
+                            src={category.image}
+                            alt={locale === "ar" ? category.nameAr : category.nameEn}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 640px) 80px, 112px"
+                          />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <h2 className="soul-section-title">
+                          <span>{category.nameEn}</span>
+                          <span>{category.nameAr}</span>
+                        </h2>
+                        <p className="mt-1 text-xs text-[#a89f8f]">
+                          {locale === "ar" ? "قسم مستقل من المنيو" : "Dedicated menu category"}
+                        </p>
+                      </div>
+                      <span className="shrink-0 border border-[#3d3528] bg-[#252018] px-3 py-1 text-xs font-semibold text-[#a89f8f]">
+                        {category.products.filter((p) => p.isAvailable).length} {locale === "ar" ? "صنف" : "items"}
+                      </span>
+                    </div>
                   ) : (
                     <h2
                       className={cn(
@@ -283,7 +315,9 @@ export function MenuView({
                       {locale === "ar" ? category.nameAr : category.nameEn}
                     </h2>
                   )}
-                  <div className={cn(isAntika ? "antika-category-products" : isListLayout ? "grid gap-2" : "grid grid-cols-2 gap-4")}>
+                  <div className={cn(
+                    isAntika ? "antika-category-products" : isSoul ? "soul-category-products" : isListLayout ? "grid gap-2" : "grid grid-cols-2 gap-4"
+                  )}>
                     {category.products
                       .filter((p) => p.isAvailable)
                       .map((product) => renderProduct(product, category))}
@@ -323,13 +357,13 @@ function MenuListProductRow({
   branchSlug: string;
   tableNumber?: number;
   currencySymbol: string;
-  variant: "antika" | "minimal";
+  variant: "antika" | "soul" | "minimal";
   onAddToCart?: (product: ProductWithCategory) => void;
 }) {
   const name = locale === "ar" ? product.nameAr : product.nameEn;
   const alternateName = locale === "ar" ? product.nameEn : product.nameAr;
   const tableQuery = tableNumber ? `?table=${tableNumber}` : "";
-  const productImage = product.image || product.category?.image || "/brands/antika/cover.png";
+  const productImage = product.image || product.category?.image || (variant === "soul" ? "/brands/soul/cover.png" : "/brands/antika/cover.png");
 
   if (variant === "antika") {
     return (
@@ -353,7 +387,7 @@ function MenuListProductRow({
               <p className="truncate text-xs text-[#6f5640]">{alternateName}</p>
             </div>
             <div className="h-px min-w-8 flex-1 bg-[#2a160f]/35 transition-colors group-hover:bg-[#b67b31]" />
-            <span className="shrink-0 font-serif text-base text-[#b67b31]">
+            <span className="antika-price shrink-0 text-base text-[#b67b31]">
               {formatPrice(product.price, currencySymbol)}
             </span>
           </div>
@@ -362,6 +396,47 @@ function MenuListProductRow({
           <Button
             size="sm"
             className="h-8 w-8 rounded-full bg-[#2a160f] p-0 text-[#f5eee3] hover:bg-[#b67b31]"
+            onClick={() => onAddToCart(product)}
+            aria-label={locale === "ar" ? "أضف للسلة" : "Add to cart"}
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  if (variant === "soul") {
+    return (
+      <div className="soul-product-row group">
+        <Link
+          href={`/menu/${branchSlug}/${product.id}${tableQuery}`}
+          className="relative h-14 w-14 shrink-0 overflow-hidden border border-[#3d3528] bg-[#252018] sm:h-16 sm:w-16"
+        >
+          <Image
+            src={productImage}
+            alt={name}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="64px"
+          />
+        </Link>
+        <Link href={`/menu/${branchSlug}/${product.id}${tableQuery}`} className="min-w-0 flex-1">
+          <div className="flex items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[15px] font-semibold text-[#f5f0e8] sm:text-base">{name}</p>
+              <p className="truncate text-xs text-[#a89f8f]">{alternateName}</p>
+            </div>
+            <div className="h-px min-w-8 flex-1 bg-[#f5f0e8]/25 transition-colors group-hover:bg-[#d4af37]" />
+            <span className="soul-price shrink-0 text-base">
+              {formatPrice(product.price, currencySymbol)}
+            </span>
+          </div>
+        </Link>
+        {onAddToCart && (
+          <Button
+            size="sm"
+            className="h-8 w-8 rounded-full bg-[#d4af37] p-0 text-[#1c1915] hover:bg-[#c4a030]"
             onClick={() => onAddToCart(product)}
             aria-label={locale === "ar" ? "أضف للسلة" : "Add to cart"}
           >

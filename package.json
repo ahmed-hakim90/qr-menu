@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:seed": "tsx prisma/seed.ts",
+    "db:seed:soul": "tsx prisma/seed-soul.ts",
     "db:migrate": "prisma migrate dev",
     "postinstall": "prisma generate"
   },

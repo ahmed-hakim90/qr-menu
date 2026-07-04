@@ -39,7 +39,7 @@ import { LocaleSwitcher } from "@/components/locale-switcher";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/generated/prisma";
 
-type NavFeature = "tables";
+type NavFeature = "tables" | "ordering";
 
 type NavItem = {
   href: string;
@@ -55,9 +55,9 @@ const navItems: NavItem[] = [
   { href: "/dashboard", icon: LayoutDashboard, key: "overview", minRole: "VIEWER" },
   { href: "/dashboard/analytics", icon: BarChart3, key: "analytics", minRole: "MANAGER" },
   // Daily operations
-  { href: "/dashboard/orders", icon: ClipboardList, key: "orders", minRole: "CAPTAIN" },
-  { href: "/dashboard/captain", icon: Compass, key: "captain", minRole: "CAPTAIN" },
-  { href: "/dashboard/cashier", icon: Wallet, key: "cashier", minRole: "CASHIER" },
+  { href: "/dashboard/orders", icon: ClipboardList, key: "orders", minRole: "CAPTAIN", feature: "ordering" },
+  { href: "/dashboard/captain", icon: Compass, key: "captain", minRole: "CAPTAIN", feature: "ordering" },
+  { href: "/dashboard/cashier", icon: Wallet, key: "cashier", minRole: "CASHIER", feature: "ordering" },
   // Tables & reservations
   { href: "/dashboard/tables", icon: UtensilsCrossed, key: "tables", minRole: "MANAGER", feature: "tables" },
   { href: "/dashboard/floor", icon: Grid3x3, key: "floor", minRole: "MANAGER", feature: "tables" },
@@ -87,7 +87,18 @@ interface DashboardSidebarProps {
   userRole: UserRole;
   features?: {
     hasTables: boolean;
+    hasOrdering: boolean;
   };
+}
+
+function isNavFeatureEnabled(
+  feature: NavFeature | undefined,
+  features: DashboardSidebarProps["features"]
+) {
+  if (!feature) return true;
+  if (feature === "tables") return features?.hasTables ?? false;
+  if (feature === "ordering") return features?.hasOrdering ?? false;
+  return true;
 }
 
 export function DashboardSidebar({ userName, userRole, features }: DashboardSidebarProps) {
@@ -110,7 +121,7 @@ export function DashboardSidebar({ userName, userRole, features }: DashboardSide
         {navItems.map(({ href, icon: Icon, key, feature, minRole, hidden }) => {
           if (hidden) return null;
           if (!hasPermission(userRole, [minRole])) return null;
-          if (feature === "tables" && !features?.hasTables) return null;
+          if (!isNavFeatureEnabled(feature, features)) return null;
           const isActive = normalizedPath === href || (href !== "/dashboard" && normalizedPath.startsWith(href));
           return (
             <Link

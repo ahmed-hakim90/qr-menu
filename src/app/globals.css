@@ -85,6 +85,11 @@ body {
   display: none;
 }
 
+.antika-menu,
+.antika-header {
+  font-family: var(--font-cairo), sans-serif;
+}
+
 .antika-menu {
   --background: #f5eee3;
   --foreground: #2a160f;
@@ -162,7 +167,6 @@ body {
 
 .antika-section-title span:first-child {
   color: #b67b31;
-  font-family: Georgia, "Times New Roman", serif;
   font-size: 1.55rem;
   font-weight: 400;
 }
@@ -184,6 +188,10 @@ body {
 .antika-product-row:hover {
   background: rgba(255, 250, 241, 0.88);
   transform: translateY(-1px);
+}
+
+.antika-price {
+  font-family: Georgia, "Times New Roman", serif;
 }
 
 .minimal-menu {
@@ -220,4 +228,75 @@ body {
   --primary: #c9a84c;
   --primary-foreground: #141210;
   background: #141210;
+}
+
+.soul-menu,
+.soul-header {
+  font-family: var(--font-cairo), sans-serif;
+}
+
+.soul-menu {
+  --background: #1c1915;
+  --foreground: #f5f0e8;
+  --card: #252018;
+  --card-foreground: #f5f0e8;
+  --muted: #2a2520;
+  --muted-foreground: #a89f8f;
+  --border: #3d3528;
+  --primary: #d4af37;
+  --primary-foreground: #1c1915;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(212, 175, 55, 0.08) 0 80px, transparent 81px),
+    radial-gradient(circle at 88% 30%, rgba(212, 175, 55, 0.05) 0 120px, transparent 121px),
+    #1c1915;
+  color: #f5f0e8;
+}
+
+.soul-category-block {
+  border-top: 2px solid #d4af37;
+  background: rgba(37, 32, 24, 0.72);
+  padding: 1rem;
+  box-shadow: inset 0 0 0 1px rgba(212, 175, 55, 0.18);
+}
+
+.soul-category-heading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.28);
+  background: rgba(28, 25, 21, 0.94);
+  padding: 0.75rem 0;
+  backdrop-filter: blur(16px);
+}
+
+.soul-section-title span:first-child {
+  color: #d4af37;
+  font-size: 1.55rem;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.soul-section-title span:last-child {
+  font-size: 1.35rem;
+  color: #f5f0e8;
+}
+
+.soul-product-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.18);
+  background: rgba(37, 32, 24, 0.48);
+  padding: 0.65rem 0.75rem;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.soul-product-row:hover {
+  background: rgba(37, 32, 24, 0.88);
+  transform: translateY(-1px);
+}
+
+.soul-price {
+  font-family: Georgia, "Times New Roman", serif;
+  color: #d4af37;
 }

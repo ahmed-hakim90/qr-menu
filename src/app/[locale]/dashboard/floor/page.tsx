@@ -2,10 +2,24 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { FloorDesigner } from "@/components/floor/floor-designer";
 import { listFloors } from "@/features/floor/services/floor-service";
+import { getEffectiveLimits, getRestaurantSubscription } from "@/lib/plans";
+import { PlanUpgradePrompt } from "@/components/dashboard/plan-upgrade-prompt";
 
 export default async function FloorPage() {
   const session = await getSession();
   if (!session) return null;
+
+  const subscription = await getRestaurantSubscription(session.restaurantId);
+  const limits = getEffectiveLimits(subscription);
+
+  if (!limits.hasTables) {
+    return (
+      <PlanUpgradePrompt
+        title="Floor Designer"
+        description="Your current plan is menu-only. Upgrade to enable table layouts and floor planning."
+      />
+    );
+  }
 
   const [branches, tables, floors] = await Promise.all([
     db.branch.findMany({

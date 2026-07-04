@@ -1,6 +1,7 @@
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getTodayAnalytics } from "@/features/analytics/services/analytics-service";
+import { getEffectiveLimits, getRestaurantSubscription } from "@/lib/plans";
 import { getTranslations } from "next-intl/server";
 import { ShareMenuLink } from "@/components/dashboard/share-menu-link";
 import Link from "next/link";
@@ -21,6 +22,9 @@ export default async function DashboardPage() {
   const t = await getTranslations("dashboard");
 
   if (!session) return null;
+
+  const subscription = await getRestaurantSubscription(session.restaurantId);
+  const limits = getEffectiveLimits(subscription);
 
   const [products, categories, branchCount, analytics, branches, restaurant] =
     await Promise.all([
@@ -43,10 +47,18 @@ export default async function DashboardPage() {
     { label: t("totalProducts"), value: products, icon: Package },
     { label: t("totalCategories"), value: categories, icon: FolderOpen },
     { label: t("totalBranches"), value: branchCount, icon: Building2 },
-    { label: t("todaySales"), value: `${analytics.salesTotal.toFixed(2)} EGP`, icon: BarChart3 },
-    { label: t("openOrders"), value: analytics.openOrdersCount, icon: ClipboardList },
-    { label: t("activeTables"), value: analytics.occupiedTables, icon: UtensilsCrossed },
-    { label: t("reservationsToday"), value: analytics.reservations, icon: Wallet },
+    ...(limits.hasOrdering
+      ? [{ label: t("todaySales"), value: `${analytics.salesTotal.toFixed(2)} EGP`, icon: BarChart3 }]
+      : []),
+    ...(limits.hasOrdering
+      ? [{ label: t("openOrders"), value: analytics.openOrdersCount, icon: ClipboardList }]
+      : []),
+    ...(limits.hasTables
+      ? [{ label: t("activeTables"), value: analytics.occupiedTables, icon: UtensilsCrossed }]
+      : []),
+    ...(limits.hasTables
+      ? [{ label: t("reservationsToday"), value: analytics.reservations, icon: Wallet }]
+      : []),
   ];
 
   return (
@@ -78,15 +90,19 @@ export default async function DashboardPage() {
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Button asChild>
-          <Link href="/dashboard/orders">{t("orders")}</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link href="/dashboard/captain">{t("captain")}</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link href="/dashboard/cashier">{t("cashier")}</Link>
-        </Button>
+        {limits.hasOrdering && (
+          <>
+            <Button asChild>
+              <Link href="/dashboard/orders">{t("orders")}</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/dashboard/captain">{t("captain")}</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/dashboard/cashier">{t("cashier")}</Link>
+            </Button>
+          </>
+        )}
         <Button asChild variant="outline">
           <Link href="/dashboard/analytics">{t("analytics")}</Link>
         </Button>

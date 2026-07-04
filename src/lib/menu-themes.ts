@@ -1,6 +1,6 @@
 export type MenuThemeLayout = "grid" | "list";
 
-export type MenuThemeSlug = "classic" | "minimal" | "antika" | "bistro";
+export type MenuThemeSlug = "classic" | "minimal" | "antika" | "bistro" | "soul";
 
 export interface MenuThemeDefinition {
   slug: MenuThemeSlug;
@@ -75,6 +75,18 @@ export const MENU_THEMES: Record<MenuThemeSlug, MenuThemeDefinition> = {
     layout: "grid",
     cssClass: "bistro-menu",
     previewColors: { background: "#141210", primary: "#c9a84c", accent: "#f5f0e8" },
+  },
+  soul: {
+    slug: "soul",
+    nameAr: "سول",
+    nameEn: "Soul",
+    descriptionAr: "تصميم داكن فاخر بخطوط ذهبية — مستوحى من منيو Soul الأصلي",
+    descriptionEn: "Premium dark theme with gold script accents — inspired by Soul's original menu",
+    isPremium: true,
+    price: 199,
+    layout: "list",
+    cssClass: "soul-menu",
+    previewColors: { background: "#1c1915", primary: "#d4af37", accent: "#f5f0e8" },
   },
 };
 

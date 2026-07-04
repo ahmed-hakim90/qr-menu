@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { apiRequest } from "@/lib/dashboard-api";
 import { formatCurrencyAmount } from "@/lib/currency";
 import { cn } from "@/lib/utils";
+import { MenuThemePreviewButton } from "@/components/dashboard/menu-theme-preview-dialog";
 import type { MenuThemeSlug } from "@/lib/menu-themes";
 import type { ThemePurchaseStatus } from "@/generated/prisma";
 
@@ -171,6 +172,12 @@ export function AppearanceManager({ activeMenuTheme, themes }: AppearanceManager
                     {t("pendingPayment")}
                   </Badge>
                 )}
+
+                <MenuThemePreviewButton
+                  themeSlug={theme.slug}
+                  themeName={name}
+                  className="w-full gap-2"
+                />
 
                 {canSelect && (
                   <Button
